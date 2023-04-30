@@ -1,7 +1,7 @@
 /*----- constants -----*/
 const colors = {
-    '3' : 'brown', //ground
-    '0' : 'blue', //water
+    '3' : 'rgb(180,130,110)', //ground
+    '0' : 'rgb(100,149,237)', //water
     '1' : 'gray', //lily-pads/logs
     '-1' : 'green' //frogger
 }
@@ -52,7 +52,6 @@ function init() {
 }
 
 function riverFlow() {
-   
 
         // for (let i = 0; i < river6.length; i++){
         //     river6[i] = river6.indexOf(i + 1)
@@ -65,25 +64,17 @@ function render() {
 }
 
 function renderBoard() {
-const ground1 = board[10]   //ground
-const river1 = board[9]         //river
-const ground2 = board[8]    //ground
-const river2 = board[7]         //river
-const river3 = board[6]         //river
-const ground3 = board[5]    //ground
-const ground4 = board[4]    //ground
-const river4 = board[3]         //river
-const river5 = board[2]         //river
-const river6 = board[1]         //river
-const ground5 = board[0]    //ground
-
-for (let i = 0; i < ground1.length; i++) {
-    const concat = `c${i}r${board.indexOf(ground1)}`
-    const cellEl = document.getElementById("c" + i + "r" +board.indexOf(ground1))
-    cellEl.style.backgroundColor = colors[ground1[i]]
+let innerArr = null
+for (let i = 0; i < board.length; i++) {
+    innerArr = board[i]
+    generateRow()
+    function generateRow() {
+        for (let i = 0; i < innerArr.length; i++) {
+        const cellEl = document.getElementById("c" + i + "r" +board.indexOf(innerArr))
+        cellEl.style.backgroundColor = colors[innerArr[i]]
+    }
 }
-/* create a for loop of for loops. The outer for loop will iterate through the board array and for each index in that array it will run the inner array, which colors the row. */
-
+}
 }
 
 
