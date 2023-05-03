@@ -7,14 +7,25 @@ body {
     align-items: center;
 }
 
+body > img {
+    margin-top: 20vmin;
+}
+
 #gameboard {
-    
     display: grid;
     grid-template-columns: repeat(10, 10vmin);
     grid-template-rows: repeat(11, 10vmin);
     margin-top: 1.5vmin;
 }
 
-#gameboard > div {
-    border: 0.1vmin solid rgb(148, 146, 146); 
+@media only screen and (max-width: 480){
+    body {
+
+    }
+}
+
+@media only screen and (max-width: 768){
+    body {
+
+    }
 }
