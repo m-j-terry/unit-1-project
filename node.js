@@ -25,6 +25,7 @@ let frogger = {
 
 /*----- event listeners -----*/
 addEventListener('keydown', (event) => {
+    clearInterval(logInterval)
     if (event.code == 'ArrowUp' || event.code == 'KeyW') {
         hopForward()
     } else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
@@ -36,14 +37,20 @@ addEventListener('keydown', (event) => {
     }
 })
 
-// addEventListener('click', (e) => {
-//     riverFlow()
-// })
-
-// addEventListener('click', riverFlow)
-
 /*----- functions -----*/
 init() 
+
+let ground5 = board[0]
+let river6 = board[1]
+let river5 = board[2]
+let river4 = board[3]
+let ground4 = board[4]
+let ground3 = board[5]
+let river3 = board[6]
+let river2 = board[7]
+let ground2 = board[8]
+let river1 = board[9]
+let ground1 = board[10]
 
 function init() {
     board = [
@@ -53,8 +60,8 @@ function init() {
         [0, 1, 0, 0, 1, 0, 0, 1, 0, 0], //row 8, idx 3, river-4
         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 7, idx 4, ground4
         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 6, idx 5, ground3
-        [1, 0, 0, 0, 1, 0, 0, 0, 1, 0], //row 5, idx 6, river-3
-        [0, 1, 0, 1, 0, 1, 0, 1, 0, 1], //row 4, idx 7, river-2
+        [1, 0, 0, 1, 0, 0, 1, 0, 0, 1], //row 5, idx 6, river-3
+        [0, 1, 0, 0, 0, 1, 0, 0, 0, 1], //row 4, idx 7, river-2
         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 3, idx 8, ground2
         [1, 1, 0, 1, 1, 0, 1, 1, 0, 1], //row 2, idx 9, river-1
         [3, 3, 3, 3, 3, -1, 3, 3, 3, 3] //row 1, idx 10, ground1 & Frogger
@@ -77,40 +84,52 @@ function renderBoard() {
             }
         }
     }
-    if (frogger.life === 0) {
-        gameOver()
-    }
 }
 
+const checkScore = () => {
+    if (frogger.life === 0 ) {
+        gameOver()
+    } else if (ground5.includes(-1) === false && river6.includes(-1) === false && river5.includes(-1) === false && river4.includes(-1) === false && ground4.includes(-1) === false && ground3.includes(-1) === false && river3.includes(-1) === false && river2.includes(-1) === false && ground2.includes(-1) === false && river1.includes(-1) === false && ground1.includes(-1) === false) {
+        gameOver()
+    } else if (frogger.row === 0) {
+        alert("Congrats! Frogger made it across the rivers safely!")
+    }
+}
 
 /* Hopping functions */
 let frogHop = board[frogger.row]
 
 function hopForward() {
     console.log('hop up')
-    //change frogger square color to preset value 
+    //change frogger square color to preset value.
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.row = frogger.row -1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
+    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not. If frogger is 
     frogHop = board[frogger.row]
     frogger.previousColor = frogHop[frogger.column -1]
     frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
+    //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
+        frogHop.splice(frogger.column -1, 1, frogger.number)
+    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
+        logIndex()
+    } 
     renderBoard()
 }
 
 function hopLeft() {
-    console.log('hop left')
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.column = frogger.column - 1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-    frogHop = board[frogger.row]
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
+        console.log('hop left')
+        //change frogger square color to preset value
+        frogHop.splice(frogger.column -1, 1, frogger.previousColor)
+        frogger.column = frogger.column - 1
+        //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
+        frogHop = board[frogger.row]
+        frogger.previousColor = frogHop[frogger.column -1]
+        frogger.life = frogger.life * frogHop[frogger.column -1]
+        //change the color of the space frogger jumps to
+        frogHop.splice(frogger.column -1, 1, frogger.number)
+    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
+        logIndex()
+    } 
     renderBoard()
 }
 
@@ -126,6 +145,9 @@ function hopRight() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to.
     frogHop.splice(frogger.column -1, 1, frogger.number)
+    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
+        logIndex()
+    } 
     renderBoard()
 }
 
@@ -140,41 +162,78 @@ function hopBackward() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to.
     frogHop.splice(frogger.column -1, 1, frogger.number)
+    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
+        logIndex()
+    } 
     renderBoard()
 }
 
-
-
 function riverFlow() {
-    let river6 = board[1]
-        river6.push(river6[0])
+    checkScore()
+        if (river6[6] === 1 || river6[6] === -1){
+            river6.push(1)
+        } else {
+            river6.push(0)
+        }
         river6.shift()
-    let river5 = board[2]
-        river5.unshift(river5[9])
-        river5.pop()
-    let river4 = board[3]
-        river4.push(river4[0])
+
+        if (river5[3] === 1 || river5[3] === -1) {
+            river5.unshift(1)
+        } else {
+            river5.unshift(0)
+        }
+            river5.pop()
+
+        if (river4[7] === 1 || river4[7] === -1){
+            river4.push(1)
+        } else {
+            river4.push(0)
+        }
         river4.shift()
-    let river3 = board[6]
-        river3.unshift(river3[9])
+
+        if (river3[3] === 1 || river3[3] === -1) {
+            river3.unshift(1)
+        } else {
+            river3.unshift(0)
+        }
         river3.pop()
-    let river2 = board[7] //needs a new pattern to sync up with river 3
-        river2.push(river2[0])
-        river2.shift()
-    let river1 = board[9]
-        river1.unshift(river1[9])
-        river1.pop()
+
+        if (river2[6] === 1 || river2[6] === -1){
+            river2.push(1)
+        } else {
+            river2.push(0)
+        }
+            river2.shift()
+
+        if (river1[2] === 1 || river1[2] === -1) {
+            river1.unshift(1)
+        } else {
+            river1.unshift(0)
+        }
+            river1.pop()
     render()
     }
 
-// }
 
-// const riverInterval = setInterval(riverFlow, 1500)
-//Perhaps instead of pushing and popping/ shifting and unshifting,and manipulating the preexisting elements of the array, which causes interference in the patterns, you could nest several different intervals within a closure that send the different patterns at different times. 
+const riverInterval = setInterval(riverFlow, 1500)
+let logInterval
+function logIndex() {
+    logInterval = setInterval(logVelocity, 1300)
+    console.log(this)
+}
 
+function logVelocity() {
+    console.log(frogger)
+    if (frogger.row === 1 || frogger.row === 3 || frogger.row === 7) {
+        frogger.column--
+    } else if (frogger.row === 2 || frogger.row === 6 || frogger.row === 9) {
+        frogger.column++
+    }
+    console.log(frogger.column)
+}
 
 function gameOver() {
-    clearInterval(riverInterval)
+    clearInterval(riverInterval, logInterval)
     alert('Oh no, Frogger got swept away by the river!')
     // use a modal/carousel/.addClass to toggle pages and buttons to become visible.
 }
