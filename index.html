@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script src="/node.js" defer></script>
-    <link href="/style.css" rel="stylesheet" type="text/css" />
-    <title>Document</title>
+    <link href="/style.css" rel="stylesheet" type="text/css"/>
+    <audio id="intro" loop autoplay src="/Audio_Files/Intro.mp3"></audio>
+    <audio id="hop" src="/Audio_Files/Hop.wav"></audio>
+    <audio id="plunk" src="Audio_Files/plunk.wav"></audio>
+    <audio id="theme" loop src="Audio_Files/theme.mp3"></audio>
+    <title>Frogger</title>
 </head>
 <body>
     <img class="retroFrogger" src="https://www.retrorefurbs.com/wp-content/uploads/2018/05/frogger_logo_by_ringostarr39-d6687ro.png" alt="Frogger.io">
@@ -155,6 +159,11 @@
         <h2>Welcome to frogger.io </br>a simple but endlessly enjoyable take on a beloved classic!</h2>
         <p>The object of the game is to help frogger (represented in this edition by a simple green square) traverse the treacherous rivers! Hop across the bouyant objects (lily-pads, logs, piles of floating grabage!) represented by the dark graysquares floating along the river to help Frogger cross to the other side! Don't stay too long on one lily pad because you might get swept away by the currents!</p>
         <p>The controls are simple: you may maneuver Frogger from trouble by using either the universally recognized arrow keys, which move frogger in exactly the direction they point, or by using the 'wsad' keys, which work according to the same logic in which 'w' is <i>forward</i>, 's' is <i>backward</i>, 'a' is <i>left</i>, and 'd' is <i>right</i>.</p>
+        <p>Select the difficulty level below.</p>
+        <button id="easyButton">Easy</button>
+        <button id="mediumButton">Medium</button>
+        <button id="hardButton">Hard</button>
+        <button id="legendaryButton">Legendary</button>
         <p>If you are ready to begin, press the <i>play button</i> below! Good luck!</p>
         <button id="playButton">Play</button>
     </div>

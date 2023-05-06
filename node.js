@@ -29,15 +29,25 @@ let ground2
 let river1
 let ground1 
 let frogHop 
+let intervalSpeed
 
 /*----- cached elements  -----*/
 const playBtn = document.querySelector('#playButton')
 const startModal = document.querySelector('#startGameModal')
+const easyBtn = document.querySelector('#easyButton')
+const mediumBtn = document.querySelector('#mediumButton')
+const hardBtn = document.querySelector('#hardButton')
+const legendaryBtn = document.querySelector('#legendaryButton')
 const tryAgainBtn = document.querySelector('#tryAgainButton')
 const gameOverModal = document.querySelector('#gameOverModal')
 const nextLevelBtn = document.querySelector('#nextLevelButton')
 const winnerModal = document.querySelector('#winnerModal')
 const playAgainBtn = document.querySelector('#playAgainButton')
+//audio files
+const intro = document.querySelector('#intro')
+const hop = document.querySelector('#hop')
+const plunk = document.querySelector('#plunk')
+const theme = document.querySelector('#theme')
 
 /*----- event listeners -----*/
 addEventListener('keydown', (event) => {
@@ -52,17 +62,54 @@ addEventListener('keydown', (event) => {
     }
 })
 
+easyBtn.addEventListener('click', (e) => {
+    easyBtn.classList.add('speed')
+    mediumBtn.classList.remove('speed')
+    hardBtn.classList.remove('speed')
+    legendaryBtn.classList.remove('speed')
+    intervalSpeed = 1500
+})
+
+mediumBtn.addEventListener('click', (e) => {
+    mediumBtn.classList.add('speed')
+    easyBtn.classList.remove('speed')
+    hardBtn.classList.remove('speed')
+    legendaryBtn.classList.remove('speed')
+    intervalSpeed = 900
+})
+
+hardBtn.addEventListener('click', (e) => {
+    hardBtn.classList.add('speed')
+    easyBtn.classList.remove('speed')
+    mediumBtn.classList.remove('speed')
+    legendaryBtn.classList.remove('speed')
+    intervalSpeed = 650
+})
+
+legendaryBtn.addEventListener('click', (e) => {
+    legendaryBtn.classList.add('speed')
+    easyBtn.classList.remove('speed')
+    mediumBtn.classList.remove('speed')
+    hardBtn.classList.remove('speed')
+    intervalSpeed = 300
+})
+
 playBtn.addEventListener('click', (e) => {
+    intro.pause()
+    if (!easyBtn || !mediumBtn ||!hardBtn || !legendaryBtn){
+        intervalSpeed = 1000
+    }
     startModal.classList.toggle('open')
     init() 
 })
 
 playAgainBtn.addEventListener('click', (e) => {
     winnerModal.classList.toggle('open')
+    startModal.classList.toggle('open')
     frogger.row = 10
     frogger.column = 6
     frogger.previousColor = 3
-    init() 
+    intro.play()
 })
 
 tryAgainBtn.addEventListener('click', (e) => {
@@ -100,12 +147,15 @@ function init() {
     ground2 = board[8]
     river1 = board[9]
     ground1 = board[10]
+    frogHop = board[frogger.row]
     render()    
 }
 
 function render() {
     renderBoard()
-    riverInterval = setInterval(riverFlow, 1500)
+    riverInterval = setInterval(riverFlow, intervalSpeed)     /* could potentially set up a difficulty option in the modal using template literals to determine the setInterval time. */
+    theme.play()
+
 }
 
 function renderBoard() {
@@ -122,7 +172,7 @@ function renderBoard() {
 }
 
 const checkScore = () => {
-    if (frogger.life === 0 ) {
+    if (frogger.life === 0 ) { 
         gameOver()
     } else if (ground5.includes(-1) === false && river6.includes(-1) === false && river5.includes(-1) === false && river4.includes(-1) === false && ground4.includes(-1) === false && ground3.includes(-1) === false && river3.includes(-1) === false && river2.includes(-1) === false && ground2.includes(-1) === false && river1.includes(-1) === false && ground1.includes(-1) === false) {
         gameOver()
@@ -134,7 +184,6 @@ const checkScore = () => {
 /* Hopping functions */
 
 function hopForward() {
-    frogHop = board[frogger.row]
     //change frogger square color to preset value.
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.row = frogger.row -1
@@ -143,12 +192,12 @@ function hopForward() {
     frogger.previousColor = frogHop[frogger.column -1]
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
-        frogHop.splice(frogger.column -1, 1, frogger.number)
+    frogHop.splice(frogger.column -1, 1, frogger.number)
+    hop.play()
     renderBoard()
 }
 
 function hopLeft() {
-    frogHop = board[frogger.row]
     //change frogger square color to preset value
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.column = frogger.column - 1
@@ -158,11 +207,11 @@ function hopLeft() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to
     frogHop.splice(frogger.column -1, 1, frogger.number)
+    hop.play()
     renderBoard()
 }
 
 function hopRight() {
-    frogHop = board[frogger.row]
     //change frogger square color to preset value
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.column = frogger.column + 1
@@ -172,11 +221,11 @@ function hopRight() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to.
     frogHop.splice(frogger.column -1, 1, frogger.number)
+    hop.play()
     renderBoard()
 }
 
 function hopBackward() {
-    frogHop = board[frogger.row]
     //change frogger square color to preset value
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.row = frogger.row + 1
@@ -186,9 +235,7 @@ function hopBackward() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to.
     frogHop.splice(frogger.column -1, 1, frogger.number)
-    // if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
-    //     logIndex()
-    // } 
+    hop.play()
     renderBoard()
 }
 /* interval and closure for river and Frogger's movements */
@@ -251,9 +298,12 @@ function froggerLogger() {
 function winner() {
     clearInterval(riverInterval)
     winnerModal.classList.toggle('open')
+    theme.pause()
 }
 
 function gameOver() {
     clearInterval(riverInterval)
+    theme.pause()
+    plunk.play()
     gameOverModal.classList.toggle('open')
 }
