@@ -8,15 +8,15 @@ body {
 }
 
 body > .retroFrogger {
-    margin-top: 100%;
-    width: 80%;
+    margin-top: 300px;
+    width: 40%;
     max-height: auto;
 }
 
 #gameboard {
     display: grid;
-    grid-template-columns: repeat(10, 10vmin);
-    grid-template-rows: repeat(11, 10vmin);
+    grid-template-columns: repeat(10, 6vmin);
+    grid-template-rows: repeat(11, 6vmin);
 }
 
 Button {
