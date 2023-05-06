@@ -1,5 +1,5 @@
 # Frogger
-For my first project, I decided to recreate one of my favorite games from adolescence. Frogger was first released in 1981, developed by Konami and produced and released by Sega. I remember playing Frogger on one of the arcade machines at the roller rink just outside of town. Years later, I enjoyed the refreshing remake concept "Crossy Road". The logic seemed intricate, but straightforward and the prospect of a DOM-updating game 
+For my first project, I decided to recreate one of my favorite games from adolescence. Frogger was first released in 1981, developed by Konami and produced and released by Sega. I remember playing Frogger on one of the arcade machines at the roller rink just outside of town. Years later, I enjoyed the refreshing remake concept "Crossy Road". The logic seemed intricate but straightforward, and the prospect of a DOM-updating game was irresistable.
 
 ## Wireframe
 ### Preliminary Sketch, Detailing the Basic Features of the Project
