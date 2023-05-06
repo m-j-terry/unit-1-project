@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer src="/node.js"></script>
-    <link href="/style.css" rel="stylesheet" type="text/css">
+    <script src="/node.js" defer></script>
+    <link href="/style.css" rel="stylesheet" type="text/css" />
     <title>Document</title>
 </head>
 <body>
-    <img src="https://www.retrorefurbs.com/wp-content/uploads/2018/05/frogger_logo_by_ringostarr39-d6687ro.png" alt="Frogger.io">
+    <img class="retroFrogger" src="https://www.retrorefurbs.com/wp-content/uploads/2018/05/frogger_logo_by_ringostarr39-d6687ro.png" alt="Frogger.io">
     <section id="gameboard">
         
             <!---this the top ground row (row 11, idx 0) of the gameboard--->
@@ -150,6 +149,24 @@
             <div id="c8r10"></div>
             <div id="c9r10"></div>
 
+    </section>
+    <section class="modal">
+    <div id="startGameModal">
+        <h2>Welcome to frogger.io </br>a simple but endlessly enjoyable take on a beloved classic!</h2>
+        <p>The object of the game is to help frogger (represented in this edition by a simple green square) traverse the treacherous rivers! Hop across the bouyant objects (lily-pads, logs, piles of floating grabage!) represented by the dark graysquares floating along the river to help Frogger cross to the other side! Don't stay too long on one lily pad because you might get swept away by the currents!</p>
+        <p>The controls are simple: you may maneuver Frogger from trouble by using either the universally recognized arrow keys, which move frogger in exactly the direction they point, or by using the 'wsad' keys, which work according to the same logic in which 'w' is <i>forward</i>, 's' is <i>backward</i>, 'a' is <i>left</i>, and 'd' is <i>right</i>.</p>
+        <p>If you are ready to begin, press the <i>play button</i> below! Good luck!</p>
+        <button id="playButton">Play</button>
+    </div>
+    <div id="gameOverModal">
+        <p>Oh no! Frogger was swept away by the currents!</br>You'll have to be more careful next time!</p>
+        <button id="tryAgainButton">Try Again</button>
+    </div>
+    <div id="winnerModal">
+        <p>Congrats! You successfully guided Frogger across the rivers! Are you ready for round two?</br>Press the <i>Play Again</i> button to practice that same level. Press the <i>Next Level</i> button to move onto the next level!</p>
+        <button id="playAgainButton">Play Again</button>
+        <button id="nextLevelButton">Next Level</button>
+    </div>
     </section>
 </body>
 </html>

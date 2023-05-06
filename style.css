@@ -7,25 +7,91 @@ body {
     align-items: center;
 }
 
-body > img {
-    margin-top: 20vmin;
+body > .retroFrogger {
+    margin-top: 100%;
+    width: 80%;
+    max-height: auto;
 }
 
 #gameboard {
     display: grid;
     grid-template-columns: repeat(10, 10vmin);
     grid-template-rows: repeat(11, 10vmin);
-    margin-top: 1.5vmin;
 }
 
-@media only screen and (max-width: 480){
-    body {
+Button {
+    height: 35px;
+    width: 60px;
+}
 
+Button:hover {
+    background-color: green;
+    color: white;
+    height: 38px;
+    width: 65px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.modal {
+    position: relative;
+    top: -95%;
+}
+
+#startGameModal{
+    visibility: visible;
+    opacity: 1;
+    border: 5px;
+    border-color: green;
+    border-style: double;
+    background-color: khaki;
+    padding: 1vmin;
+    text-align: center;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+#startGameModal.open {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#gameOverModal, #winnerModal {
+    visibility: hidden;
+    opacity: 0;
+    border: 5px;
+    border-color: green;
+    border-style: double;
+    background-color: khaki;
+    padding: 1vmin;
+    text-align: center;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+#gameOverModal.open, #winnerModal.open {
+visibility: visible;
+opacity: 1;
+}
+
+@media only screen and (max-width: 817){
+    body > .retroFrogger {
+        max-width: 50%;
+    }
+    .modal {
+    position: relative;
+        top: -65%;
+        left: 0%;
     }
 }
 
-@media only screen and (max-width: 768){
-    body {
-
+/* @media only screen and (max-width: 768){
+    body > .retroFrogger {
+        max-width: 65%;
     }
-}
+    #gameboard {
+        position: relative;
+        top: -50;
+        left: 0%;
+        grid-template-columns: repeat(10, 6vmin);
+        grid-template-rows: repeat(11, 6vmin);
+    }
+} */

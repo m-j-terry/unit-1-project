@@ -17,15 +17,30 @@ let frogger = {
     previousColor : 3,
     life : -1
 }
+let ground5
+let river6
+let river5
+let river4
+let ground4
+let ground3
+let river3
+let river2
+let ground2
+let river1
+let ground1 
+let frogHop 
 
 /*----- cached elements  -----*/
-
-
-
+const playBtn = document.querySelector('#playButton')
+const startModal = document.querySelector('#startGameModal')
+const tryAgainBtn = document.querySelector('#tryAgainButton')
+const gameOverModal = document.querySelector('#gameOverModal')
+const nextLevelBtn = document.querySelector('#nextLevelButton')
+const winnerModal = document.querySelector('#winnerModal')
+const playAgainBtn = document.querySelector('#playAgainButton')
 
 /*----- event listeners -----*/
 addEventListener('keydown', (event) => {
-    clearInterval(logInterval)
     if (event.code == 'ArrowUp' || event.code == 'KeyW') {
         hopForward()
     } else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
@@ -37,20 +52,28 @@ addEventListener('keydown', (event) => {
     }
 })
 
-/*----- functions -----*/
-init() 
+playBtn.addEventListener('click', (e) => {
+    startModal.classList.toggle('open')
+    init() 
+})
 
-let ground5 = board[0]
-let river6 = board[1]
-let river5 = board[2]
-let river4 = board[3]
-let ground4 = board[4]
-let ground3 = board[5]
-let river3 = board[6]
-let river2 = board[7]
-let ground2 = board[8]
-let river1 = board[9]
-let ground1 = board[10]
+playAgainBtn.addEventListener('click', (e) => {
+    winnerModal.classList.toggle('open')
+    frogger.row = 10
+    frogger.column = 6
+    frogger.previousColor = 3
+    init() 
+})
+
+tryAgainBtn.addEventListener('click', (e) => {
+    gameOverModal.classList.toggle('open')
+    frogger.row = 10
+    frogger.column = 6
+    frogger.previousColor = 3
+    frogger.life = -1
+    init() 
+})
+/*----- functions -----*/ 
 
 function init() {
     board = [
@@ -66,11 +89,23 @@ function init() {
         [1, 1, 0, 1, 1, 0, 1, 1, 0, 1], //row 2, idx 9, river-1
         [3, 3, 3, 3, 3, -1, 3, 3, 3, 3] //row 1, idx 10, ground1 & Frogger
     ]
-    render()
+    ground5 = board[0]
+    river6 = board[1]
+    river5 = board[2]
+    river4 = board[3]
+    ground4 = board[4]
+    ground3 = board[5]
+    river3 = board[6]
+    river2 = board[7]
+    ground2 = board[8]
+    river1 = board[9]
+    ground1 = board[10]
+    render()    
 }
 
 function render() {
     renderBoard()
+    riverInterval = setInterval(riverFlow, 1500)
 }
 
 function renderBoard() {
@@ -92,15 +127,14 @@ const checkScore = () => {
     } else if (ground5.includes(-1) === false && river6.includes(-1) === false && river5.includes(-1) === false && river4.includes(-1) === false && ground4.includes(-1) === false && ground3.includes(-1) === false && river3.includes(-1) === false && river2.includes(-1) === false && ground2.includes(-1) === false && river1.includes(-1) === false && ground1.includes(-1) === false) {
         gameOver()
     } else if (frogger.row === 0) {
-        alert("Congrats! Frogger made it across the rivers safely!")
+        winner()
     }
 }
 
 /* Hopping functions */
-let frogHop = board[frogger.row]
 
 function hopForward() {
-    console.log('hop up')
+    frogHop = board[frogger.row]
     //change frogger square color to preset value.
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.row = frogger.row -1
@@ -110,32 +144,25 @@ function hopForward() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
         frogHop.splice(frogger.column -1, 1, frogger.number)
-    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
-        logIndex()
-    } 
     renderBoard()
 }
 
 function hopLeft() {
-        console.log('hop left')
-        //change frogger square color to preset value
-        frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-        frogger.column = frogger.column - 1
-        //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-        frogHop = board[frogger.row]
-        frogger.previousColor = frogHop[frogger.column -1]
-        frogger.life = frogger.life * frogHop[frogger.column -1]
-        //change the color of the space frogger jumps to
-        frogHop.splice(frogger.column -1, 1, frogger.number)
-    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
-        logIndex()
-    } 
+    frogHop = board[frogger.row]
+    //change frogger square color to preset value
+    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
+    frogger.column = frogger.column - 1
+    //record the color of the square that frogger will jump to and see ifFrogger fell in the water or not!
+    frogHop = board[frogger.row]
+    frogger.previousColor = frogHop[frogger.column -1]
+    frogger.life = frogger.life * frogHop[frogger.column -1]
+    //change the color of the space frogger jumps to
+    frogHop.splice(frogger.column -1, 1, frogger.number)
     renderBoard()
 }
 
-
 function hopRight() {
-    console.log('hop right')
+    frogHop = board[frogger.row]
     //change frogger square color to preset value
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.column = frogger.column + 1
@@ -145,14 +172,11 @@ function hopRight() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to.
     frogHop.splice(frogger.column -1, 1, frogger.number)
-    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
-        logIndex()
-    } 
     renderBoard()
 }
 
 function hopBackward() {
-    console.log('hop back')
+    frogHop = board[frogger.row]
     //change frogger square color to preset value
     frogHop.splice(frogger.column -1, 1, frogger.previousColor)
     frogger.row = frogger.row + 1
@@ -162,12 +186,12 @@ function hopBackward() {
     frogger.life = frogger.life * frogHop[frogger.column -1]
     //change the color of the space frogger jumps to.
     frogHop.splice(frogger.column -1, 1, frogger.number)
-    if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
-        logIndex()
-    } 
+    // if (frogger.row === 1 || frogger.row === 2 || frogger.row === 3 || frogger.row === 6 || frogger.row === 7 || frogger.row === 9) {
+    //     logIndex()
+    // } 
     renderBoard()
 }
-
+/* interval and closure for river and Frogger's movements */
 function riverFlow() {
     checkScore()
         if (river6[6] === 1 || river6[6] === -1){
@@ -211,29 +235,25 @@ function riverFlow() {
             river1.unshift(0)
         }
             river1.pop()
-    render()
+    froggerLogger()
+    renderBoard()
+    }
+
+function froggerLogger() {
+        if (frogger.row === 1 || frogger.row === 3 || frogger.row === 7) {
+            frogger.column--
+        } else if (frogger.row === 2 || frogger.row === 6 || frogger.row === 9) {
+            frogger.column++
+        }
     }
 
 
-const riverInterval = setInterval(riverFlow, 1500)
-let logInterval
-function logIndex() {
-    logInterval = setInterval(logVelocity, 1300)
-    console.log(this)
-}
-
-function logVelocity() {
-    console.log(frogger)
-    if (frogger.row === 1 || frogger.row === 3 || frogger.row === 7) {
-        frogger.column--
-    } else if (frogger.row === 2 || frogger.row === 6 || frogger.row === 9) {
-        frogger.column++
-    }
-    console.log(frogger.column)
+function winner() {
+    clearInterval(riverInterval)
+    winnerModal.classList.toggle('open')
 }
 
 function gameOver() {
-    clearInterval(riverInterval, logInterval)
-    alert('Oh no, Frogger got swept away by the river!')
-    // use a modal/carousel/.addClass to toggle pages and buttons to become visible.
+    clearInterval(riverInterval)
+    gameOverModal.classList.toggle('open')
 }
