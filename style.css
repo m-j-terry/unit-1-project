@@ -1,6 +1,6 @@
 body {
-    height: 100vh;
-    margin: 10vh;
+    /* height: 100vh; */
+    /* margin: 10vh; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -8,12 +8,17 @@ body {
 }
 
 body > .retroFrogger {
-    margin-top: 400px;
+    position: static;
     width: 40%;
     max-height: auto;
 }
 
 #gameboard {
+    display: none;
+}
+
+#gameboard.open {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(10, 6vmin);
     grid-template-rows: repeat(11, 6vmin);
@@ -35,8 +40,14 @@ Button:hover {
 
 .modal {
     position: relative;
-    top: -60%;
-    width: 50%
+    width: 50%;
+    border: 5px;
+    border-color: green;
+    border-style: double;
+    background-color: khaki;
+    padding: 1vmin;
+    text-align: center;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
 }
 
 #easyButton, #mediumButton, #hardButton, #legendaryButton {
@@ -49,41 +60,29 @@ Button:hover {
     transform: scale(1.3);
 }
 
-#startGameModal{
-    visibility: visible;
-    opacity: 1;
-    border: 5px;
-    border-color: green;
-    border-style: double;
-    background-color: khaki;
-    padding: 1vmin;
-    text-align: center;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+#startGameModal {
+    display: block;
+    position: relative;
 }
 
 #startGameModal.open {
-    visibility: hidden;
-    opacity: 0;
+    display: none;
 }
 
-#gameOverModal, #winnerModal {
-    visibility: hidden;
-    opacity: 0;
-    border: 5px;
-    border-color: green;
-    border-style: double;
-    background-color: khaki;
-    padding: 1vmin;
-    text-align: center;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+#gameOverModal, #winnerModal, #nextLevelModal {
+    display: none;
 }
 
-#gameOverModal.open, #winnerModal.open {
-visibility: visible;
-opacity: 1;
+#gameOverModal.open, #winnerModal.open, #nextLevelModal.open {
+    display: block
 }
 
-@media only screen and (max-width: 817){
+#theme, #intro {
+    position: absolute;
+    margin-left: -130vmin;
+}
+
+/* @media only screen and (max-width: 817){
     body > .retroFrogger {
         max-width: 50%;
     }
@@ -92,7 +91,7 @@ opacity: 1;
         top: -65%;
         left: 0%;
     }
-}
+} */
 
 /* @media only screen and (max-width: 768){
     body > .retroFrogger {
