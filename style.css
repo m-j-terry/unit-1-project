@@ -50,7 +50,11 @@ Button:hover {
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
 }
 
-#easyButton, #mediumButton, #hardButton, #legendaryButton {
+.modal.close, #startGameModal.close {
+    display: none;
+}
+
+#easyButton, #mediumButton, #hardButton, #legendaryButton, #schoolZone, #highway, #interstate, #autobahn {
     width: auto;
     background-color: khaki;
     border-style: none;
@@ -60,26 +64,22 @@ Button:hover {
     transform: scale(1.3);
 }
 
+#startGameModal.close {
+    display: none;
+    position: relative;
+}
+
 #startGameModal {
     display: block;
     position: relative;
 }
 
-#startGameModal.open {
+#gameOverModal, #winnerModal, #nextLevelModal, #replayModal {
     display: none;
 }
 
-#gameOverModal, #winnerModal, #nextLevelModal {
-    display: none;
-}
-
-#gameOverModal.open, #winnerModal.open, #nextLevelModal.open {
+#gameOverModal.open, #winnerModal.open, #nextLevelModal.open, #replayModal.open {
     display: block
-}
-
-#theme, #intro {
-    position: absolute;
-    margin-left: -130vmin;
 }
 
 /* @media only screen and (max-width: 817){
