@@ -260,13 +260,11 @@ function render() {
         intervalSpeed = 1000
     }
 
-    console.log(intervalSpeed)
     if (level === 1) {
         riverInterval = setInterval(riverFlow, intervalSpeed) 
     } else if (level === 2) {  
         trafficInterval = setInterval(traffic, intervalSpeed)
     }
-    console.log(intervalSpeed)
     theme.play()
 }
 
@@ -448,8 +446,10 @@ function traffic() {
 
 function carSplat() {
     if (frogger.row === carSplatRow && carSplatCol === 4 || carSplatCol === 5 || carSplatCol === 6 || carSplatCol === 7 || carSplatCol === 8 || carSplatCol === 9 || carSplatCol === 10) {
-        gameOver()    
-    }
+        gameOver()
+        carSplatRow = null
+        carSplatCol = null
+        }
 }
 
 function stationaryFrogger() {

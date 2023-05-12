@@ -4,6 +4,7 @@ For my first project, I decided to recreate one of my favorite games from adoles
 ## Wireframe
 ### Preliminary Sketch, Detailing the Basic Features of the Project
 ![](Figure_1.png)
+
 ### Fully Rendered Gameboard
 ![](Figure_2.png)
 
