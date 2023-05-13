@@ -1,6 +1,9 @@
 # Frogger.io
 For my first project, I decided to recreate one of my favorite games from adolescence. Frogger was first released in 1981, developed by Konami and produced and released by Sega. I remember playing Frogger on one of the arcade machines at the roller rink just outside of town. Years later, I enjoyed the refreshing remake concept "Crossy Road". The logic seemed intricate but straightforward, and the prospect of a DOM-updating game was irresistable.
 
+## Technologies
+-This project required use of HTML, CSS, and JavaScript.
+
 ## Wireframe
 ### Preliminary Sketch, Detailing the Basic Features of the Project
 ![](Figure_1.png)
@@ -39,9 +42,6 @@ For my first project, I decided to recreate one of my favorite games from adoles
 stationaryFrogger() uses conditionals to correspond the particular functionality to the particular gameboard.row in question. Essentially, for 'east' bound lanes that contain -1 (frogger), frogger.previousColorLeft is set to gameboard.row_[left], then, at gameboard.row_, the index value equal to the variable 'left' is spliced with frogger.previousColorLeft, the index value equal to the variable 'center' is spliced with -1, and the index value equal to the variable 'right' is spliced with 1. For 'Wast' bound lanes that contain -1 (frogger), frogger.previousColorRight is set to gameboard.row_[right], then, at gameboard.row_, the index value equal to the variable 'right' is spliced with frogger.previousColorRight, the index value equal to the variable 'center' is spliced with -1, and the index value equal to the variable 'left' is spliced with 1. This function makes it so that at each interval, Frogger is not moved along with the rest index values in the rows. 
 ### Frogger Controls
 -There are four functions defining frogger's movement, which correspond to the standard WASD controls and arrow keys, using keyboard event listeners. In each movement, the color of the square that frogger is hopping away from is reset by setting it equal to frogger.previousColor Next, for hopForward() and hopBackward(), frogger.row is adjusted by 1 inversely, and for hopLeft() and hopRight() frogger.column is adjusted by 1 accordingly. frogHop is set to the Board at idx frogger.row. A conditional is set for these movements that only affects the game on the level 2 board. Next frogger.previous color is set to the color of the square to be jumped on (so that it can be replaced when Frogger inevitably hops away!). frogger.life is multiplied by the number of the square he is jumping onto. Then the square that frogger is hopping onto is spliced with a -1 (frogger). Lastly, the hop sound is played and the board is rendered to display these changes.
-
-## Technologies
--This project required use of HTML, CSS, and JavaScript. 
 
 ## Future Updates
 ***Future Updates***
