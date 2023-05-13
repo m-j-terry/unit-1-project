@@ -4,13 +4,13 @@ const colors = {
     '0' : 'rgb(100,149,237)', //water
     '1' : 'gray', //lily-pads/logs
     '-1' : 'green', //frogger
-    '4' : 'yellow', 
-    '5' : 'red', 
-    '6' : 'orange', 
-    '7' : 'purple', 
-    '8' : 'navy', 
-    '9' : 'brown', 
-    '10' : 'white'
+    '4' : 'yellow', //car
+    '5' : 'red', //car
+    '6' : 'orange', //car
+    '7' : 'purple', //car
+    '8' : 'navy', //car
+    '9' : 'brown', //car
+    '10' : 'white'//car
 }
 
 /*----- state variables -----*/
@@ -26,10 +26,75 @@ let frogger = {
     previousColor : 3,
     previousColorLeft : null,
     previousColorRight : null,
-    life : -1
+    life : -1,
+    hopForward() {
+        //change frogger square color to preset value.
+        frogHop.splice(frogger.column -1, 1, frogger.previousColor)
+        frogger.row = frogger.row -1
+        //record the color of the square that frogger will jump to and see if Frogger fell in the water or not. If frogger is 
+        frogHop = board[frogger.row]
+        if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
+            gameOver()
+        }
+        frogger.previousColor = frogHop[frogger.column -1]
+        frogger.life = frogger.life * frogHop[frogger.column -1]
+        //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
+        frogHop.splice(frogger.column -1, 1, frogger.number)
+        hop.play()
+        renderBoard()
+    },
+    hopLeft() {
+        //change frogger square color to preset value
+        frogHop.splice(frogger.column -1, 1, frogger.previousColor)
+        frogger.column = frogger.column - 1
+        //record the color of the square that frogger will jump to and see ifFrogger fell in the water or not!
+        frogHop = board[frogger.row]
+        if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
+            gameOver()
+        }
+        frogger.previousColor = frogHop[frogger.column -1]
+        frogger.life = frogger.life * frogHop[frogger.column -1]
+        //change the color of the space frogger jumps to
+        frogHop.splice(frogger.column -1, 1, frogger.number)
+        hop.play()
+        renderBoard()
+    },
+    hopRight() {
+        //change frogger square color to preset value
+        frogHop.splice(frogger.column -1, 1, frogger.previousColor)
+        frogger.column = frogger.column + 1
+        //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
+        frogHop = board[frogger.row]
+        if (frogHop[frogger.column -1] === 4 || frogHop[frogger.column -1] === 5 || frogHop[frogger.column -1] === 6 || frogHop[frogger.column -1] === 7 || frogHop[frogger.column -1] === 8 || frogHop[frogger.column -1] === 9 || frogHop[frogger.column -1] === 10) {
+            gameOver()    
+        }
+        frogger.previousColor = frogHop[frogger.column -1]
+        frogger.life = frogger.life * frogHop[frogger.column -1]
+        //change the color of the space frogger jumps to.
+        frogHop.splice(frogger.column -1, 1, frogger.number)
+        hop.play()
+        renderBoard()
+    },
+    hopBackward() {
+        //change frogger square color to preset value
+        frogHop.splice(frogger.column -1, 1, frogger.previousColor)
+        frogger.row = frogger.row + 1
+        //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
+        frogHop = board[frogger.row]
+        if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
+            gameOver()
+        }
+        frogger.previousColor = frogHop[frogger.column -1]
+        frogger.life = frogger.life * frogHop[frogger.column -1]
+        //change the color of the space frogger jumps to.
+        frogHop.splice(frogger.column -1, 1, frogger.number)
+        hop.play()
+        renderBoard()
+    }
 }
 
 let gameboard
+/* let gameboardType */     //<-- for a future patch!
 let board 
 let riverInterval
 let trafficInterval
@@ -85,13 +150,13 @@ const theme = document.querySelector('#theme')
 /*----- event listeners -----*/
 addEventListener('keydown', (event) => {
     if (event.code == 'ArrowUp' || event.code == 'KeyW') {
-        hopForward()
+        frogger.hopForward()
     } else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
-        hopBackward()
+        frogger.hopBackward()
     } else if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-        hopLeft()
+        frogger.hopLeft()
     } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-        hopRight()
+        frogger.hopRight()
     }
 })
 
@@ -214,6 +279,13 @@ level2Btn.addEventListener('click', (e) => {
 /*----- functions -----*/ 
 
 /* board functions */
+playIntro()
+
+function playIntro() {
+    intro.play()
+    intro.volume = .5
+}
+
 function init() {
     boardHTML.classList.add('open')
     froggerReset()
@@ -245,7 +317,11 @@ function init() {
         [1, 1, 4, 1, 1, 5, 1, 1, 6, 1], //row 2, idx 9
         [3, 3, 3, 3, 3, -1, 3, 3, 3, 3] //row 1, idx 10, Frogger
         ]
-    }
+    } /* else if (level === 3) {
+        board = []
+        randomBoard()
+        console.log(board)
+    } */    //<-- for a future patch!
     setRows()
     frogHop = gameboard.row10
     render()    
@@ -265,8 +341,11 @@ function render() {
         riverInterval = setInterval(riverFlow, intervalSpeed) 
     } else if (level === 2) {  
         trafficInterval = setInterval(traffic, intervalSpeed)
-    }
+    } /* else if (lever === 3) {
+        combinedInterval = setInterval(combined, intervalSpeed)
+    } */
     theme.play()
+    theme.volume = .5
 }
 
 function renderBoard() {
@@ -281,6 +360,60 @@ function renderBoard() {
         }
     }
 }
+/* FOR A FUTURE PATCH, function to randomize gameboard. Will have to adjust interval logic to allow both intervals to work according to the following logic: 1) if the row is an odd index, they must move east to west; if the row is an even increment, they must move west to east. 2) interval must only be responsive to rows that match its type (use the Object.values(gameboardType) to help the functions decide with minimal logic which one to follow). 
+function randomBoard() {
+    let rowType
+    let rowTypeArr = []
+    for (let i = 0; i < 11; i++) {
+        let rowNum = Math.floor(Math.random() * 7) + 1
+        if (i === 0 || i === 10 || rowNum === 1) {
+            rowType = 'ground'
+            rowTypeArr.push(rowType)
+        } else if (rowNum === 2 || rowNum === 3 || rowNum === 4) {
+            rowType = 'river'
+            rowTypeArr.push(rowType)
+        } else if (rowNum === 5 || rowNum === 6 || rowNum === 7) {
+            rowType = 'road'
+            roadDirection = Math.floor(Math.random() * 2) + 1
+            rowTypeArr.push(rowType)
+        }
+        gameboardType = new Board(rowTypeArr[0], rowTypeArr[1], rowTypeArr[2], rowTypeArr[3], rowTypeArr[4], rowTypeArr[5], rowTypeArr[6], rowTypeArr[7], rowTypeArr[8], rowTypeArr[9], rowTypeArr[10]);
+    }
+    generateColumns()
+    function generateColumns() {
+        let arr = Object.values(gameboardType)
+        console.log(arr)
+    for (let i = 0; i < arr.length; i++) {
+        let pattern
+        if (i === 10) {
+            board.push([3, 3, 3, 3, 3, -1, 3, 3, 3, 3])
+        } else if (arr[i] === 'ground') {
+            board.push([3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
+        } else if (arr[i] === 'road') {
+            pattern = Math.floor(Math.random() * 3) + 1
+                if (pattern === 1) {
+                    board.push([1, 1, 1, 4, 1, 6, 1, 9, 1, 1])
+                } else if (pattern === 2) {
+                    board.push([1, 8, 1, 1, 7, 1, 9, 10, 1, 4])
+                } else if (pattern === 3) {
+                    board.push([5, 1, 1, 6, 8, 1, 1, 5, 1, 10])
+                }
+        } else if (arr[i] = 'river') {
+            pattern = Math.floor(Math.random() * 4) + 1
+            if (pattern === 1) {
+                board.push([1, 0, 1, 0, 1, 0, 1, 0, 1, 0])
+            } else if (pattern === 2) {
+                board.push([0, 1, 1, 0, 0, 1, 1, 0, 0, 1])
+            } else if (pattern === 3) { 
+                    board.push([0, 0, 0, 1, 0, 0, 0, 1, 0, 0])
+                } else if (pattern === 4) {
+                    board.push([0, 0, 0, 0, 0, 1, 0, 0, 0, 0])  //idx 3 or idx 6
+                }
+            } 
+        }
+    }
+}
+*/
 
 /* riverInterval */
 function riverFlow() {
@@ -448,74 +581,12 @@ const exitRamp = (arr) => {
         arr.pop()
 }
 
-/* Hopping functions */
-function hopForward() {
-    //change frogger square color to preset value.
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.row = frogger.row -1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not. If frogger is 
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
-        gameOver()
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
+/* Combined Interval, for future patch 
+function combined() {
+    riverFlow()
+    traffic()
 }
-
-function hopLeft() {
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.column = frogger.column - 1
-    //record the color of the square that frogger will jump to and see ifFrogger fell in the water or not!
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
-        gameOver()
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
-}
-
-function hopRight() {
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.column = frogger.column + 1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column -1] === 4 || frogHop[frogger.column -1] === 5 || frogHop[frogger.column -1] === 6 || frogHop[frogger.column -1] === 7 || frogHop[frogger.column -1] === 8 || frogHop[frogger.column -1] === 9 || frogHop[frogger.column -1] === 10) {
-        gameOver()    
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
-}
-
-function hopBackward() {
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.row = frogger.row + 1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
-        gameOver()
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
-}
+*/
 
 /* scoring and reset functions */
 function froggerReset() {
@@ -548,8 +619,12 @@ function winner() {
         boardHTML.classList.remove('open')
         replayModal.classList.add('open')
         modal.classList.remove('close')
-    }
-    
+    } /* else if ( level === 3) {
+        clearInterval(combinedInterval)
+        boardHTML.classList.remove('open')
+        replayModal.classList.add('open')
+        modal.classList.remove('close') 
+    } */      //<--for a future patch!
     theme.pause()
 }
 
@@ -558,7 +633,9 @@ function gameOver() {
         clearInterval(riverInterval)
     } else if (level === 2 ) {
         clearInterval(trafficInterval)
-    }
+    }/* else if ( level === 3) {
+        clearInterval(combinedInterval)
+    } */      //<--for a future patch!
     theme.pause()
     plunk.play()
     boardHTML.classList.remove('open')
