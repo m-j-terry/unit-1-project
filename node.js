@@ -343,7 +343,7 @@ function traffic() {
     let right = frogger.column
     let left = frogger.column - 2
     carSplat()
-    // checkScore()
+    checkScore()
     if (frogger.row === 1 || frogger.row === 3 || frogger.row === 5 || frogger.row === 7 || frogger.row === 9) {
         carSplatCol = frogHop[right]
         carSplatRow = frogger.row 
