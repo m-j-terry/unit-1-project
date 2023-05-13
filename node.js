@@ -374,7 +374,7 @@ function carSplat() {
 
 function stationaryFrogger() {
     let right = frogger.column
-    let left = frogger.column - 2       //make these three rows (and 386-388) dryer
+    let left = frogger.column - 2       //possibly could turn these if else if statements dryer by using a for loop...
     let center = frogger.column - 1 
     if (frogger.row === 9) {
         frogger.previousColorRight = gameboard.row9[right]

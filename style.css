@@ -81,27 +81,3 @@ Button:hover {
 #gameOverModal.open, #winnerModal.open, #nextLevelModal.open, #replayModal.open {
     display: block
 }
-
-/* @media only screen and (max-width: 817){
-    body > .retroFrogger {
-        max-width: 50%;
-    }
-    .modal {
-    position: relative;
-        top: -65%;
-        left: 0%;
-    }
-} */
-
-/* @media only screen and (max-width: 768){
-    body > .retroFrogger {
-        max-width: 65%;
-    }
-    #gameboard {
-        position: relative;
-        top: -50;
-        left: 0%;
-        grid-template-columns: repeat(10, 6vmin);
-        grid-template-rows: repeat(11, 6vmin);
-    }
-} */
