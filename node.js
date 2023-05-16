@@ -27,6 +27,7 @@ let frogger = {
     previousColorLeft : null,
     previousColorRight : null,
     life : -1,
+    levelsCompleted : [],
     hopForward() {
         //change frogger square color to preset value.
         frogHop.splice(frogger.column -1, 1, frogger.previousColor)
@@ -138,6 +139,10 @@ const autobahnBtn = document.querySelector('#autobahn')
 const replayModal = document.querySelector('#replayModal')
 const level1Btn = document.querySelector('#level1')
 const level2Btn = document.querySelector('#level2')
+const playAgainModal = document.querySelector('#playAgainModal')
+const levelThreeModal = document.querySelector('#levelThreeModal')
+const level3Btn = document.querySelector('#level3')
+const playMoreBtn = document.querySelector('#playMoreButton')
 
 const boardHTML = document.querySelector('#gameboard')
 
@@ -210,7 +215,6 @@ playBtn.addEventListener('click', (e) => {
 playAgainBtn.addEventListener('click', (e) => {
     winnerModal.classList.remove('open')
     startModal.classList.remove('close')
-    intro.play()
 })
 
 tryAgainBtn.addEventListener('click', (e) => {
@@ -274,6 +278,20 @@ level2Btn.addEventListener('click', (e) => {
     replayModal.classList.remove('open')
     level = 2
     nextLevelModal.classList.add('open')
+})
+
+level3Btn.addEventListener('click', (e) => {
+    playAgainModal.classList.remove('open')
+    level = 3
+    levelThreeModal.classList.add('open')
+})
+
+playMoreBtn.addEventListener('click', (e) => {
+    levelThreeModal.classList.remove('open')
+    modal.classList.add('close')
+    boardHTML.classList.add('open')
+    intro.pause()
+    init()
 })
 
 /*----- functions -----*/ 
@@ -609,23 +627,32 @@ const checkScore = () => {
 }
 
 function winner() {
-    if (level === 1) {
-        clearInterval(riverInterval)
+    if (level === 1 && frogger.levelsCompleted.indexOf(1) === -1) {
+        frogger.levelsCompleted.push(1)
+    } else if (level === 2 && frogger.levelsCompleted.indexOf(2) === -1) {
+        frogger.levelsCompleted.push(2)
+    } else if (level === 3 && frogger.levelsCompleted.indexOf(3) === -1) {
+        frogger.levelsCompleted.push(3)
+    }
+
+    if (frogger.levelsCompleted.includes(3)) {
+        clearInterval(combinedInterval)
         boardHTML.classList.remove('open')
+        playAgainModal.classList.add('open')
         modal.classList.remove('close')
-        winnerModal.classList.add('open')
-    } else if (level === 2) {
+    } else if (frogger.levelsCompleted.includes(2)) {
         clearInterval(trafficInterval)
         boardHTML.classList.remove('open')
         replayModal.classList.add('open')
         modal.classList.remove('close')
-    } /* else if ( level === 3) {
-        clearInterval(combinedInterval)
+    } else if (frogger.levelsCompleted.includes(1)) { 
+        clearInterval(riverInterval)
         boardHTML.classList.remove('open')
-        replayModal.classList.add('open')
-        modal.classList.remove('close') 
-    } */      //<--for a future patch!
+        modal.classList.remove('close')
+        winnerModal.classList.add('open')
+    } 
     theme.pause()
+    intro.play()
 }
 
 function gameOver() {
