@@ -74,10 +74,10 @@ Button:hover {
     position: relative;
 }
 
-#gameOverModal, #winnerModal, #nextLevelModal, #replayModal, #levelThreeModal, #playAgainModal {
+#gameOverModal, #winnerModal, #nextLevelModal, #replayModal {
     display: none;
 }
 
-#gameOverModal.open, #winnerModal.open, #nextLevelModal.open, #replayModal.open, #levelThreeModal, #playAgainModal {
+#gameOverModal.open, #winnerModal.open, #nextLevelModal.open, #replayModal.open {
     display: block
 }
