@@ -15,20 +15,24 @@ const colors = {
 
 /*----- state variables -----*/
 
-let level = 1
+let highScore = 0
 let innerArr
 let frogHop
-let intervalSpeed = 1000
+// let intervalSpeed = 1000
 let frogger = {
     number : -1,
-    row : 10,
+    row : 9,
     column : 6,
     previousColor : 3,
     previousColorLeft : null,
     previousColorRight : null,
     life : -1,
+    hopBack: 0,
+    rows: 0,
+    score: 0,
     /* Hopping functions as methods */
     hopForward() {
+        frogger.hopBack === 0 ? frogger.score++ : frogger.hopBack--
         //change frogger square color to preset value.
         frogHop.splice(frogger.column -1, 1, frogger.previousColor)
         frogger.row = frogger.row -1
@@ -41,6 +45,8 @@ let frogger = {
         frogger.life = frogger.life * frogHop[frogger.column -1]
         //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
         frogHop.splice(frogger.column -1, 1, frogger.number)
+        frogger.row = 9
+        gameboard.scrollDown()
         hop.play()
         renderBoard()
     },
@@ -89,8 +95,20 @@ let frogger = {
         frogger.life = frogger.life * frogHop[frogger.column -1]
         //change the color of the space frogger jumps to.
         frogHop.splice(frogger.column -1, 1, frogger.number)
+        frogger.row = 9
+        frogger.hopBack++
+        gameboard.scrollUp()
         hop.play()
         renderBoard()
+    },
+    reset(){
+        frogger.row = 9
+        frogger.column = 6
+        frogger.previousColor = 3
+        frogger.previousColorLeft = null
+        frogger.previousColorRight = null
+        frogger.life = -1
+        frogger.score = 0
     }
 }
 
@@ -110,202 +128,239 @@ const riverPatterns = {
     seven : [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
 }
 
-let gameboard
-let board 
-let riverInterval
+// let gameboardType
+// let row
+let boardInterval
 let trafficInterval
 let carSplatCol
 let carSplatRow
-class Board {
-    constructor(row0, row1, row2, row3, row4, row5, row6, row7, row8, row9, row10) {
-    this.row0 = row0,
-    this.row1 = row1,
-    this.row2 = row2,
-    this.row3 = row3,
-    this.row4 = row4,
-    this.row5 = row5,
-    this.row6 = row6,
-    this.row7 = row7,
-    this.row8 = row8,
-    this.row9 = row9,
-    this.row10 = row10
+
+let gameboard = {
+    board: [],
+    cachedRows: [],
+    direction: [],
+    cachedDirection: [],
+    eastWest: -1,
+
+    scrollDown() {
+        if (frogger.hopBack > 0) {
+            gameboard.cachedRows.push(gameboard.board[10])
+            gameboard.board.pop()
+            gameboard.board.unshift(cachedRows[0])
+            gameboard.cachedRows.shift()
+            
+            gameboard.cachedDirection.push(gameboard.direction[10])
+            gameboard.direction.pop()
+            gameboard.direction.unshift(cachedDirections[0])
+            gameboard.cachedDirection.shift()
+        } else {
+            gameboard.cachedRows.push(gameboard.board[10])
+            gameboard.board.pop()
+            gameboard.cachedDirection.push(gameboard.direction[10])
+            gameboard.direction.pop()
+            gameboard.generateRow()
+        }
+        frogger.rows++
+    },
+    scrollUp() {
+        if (frogger.rows === 0) { 
+            alert('Uh Oh! frogger needs to move forward!') 
+        } else {
+            frogger.hopBack++
+            gameboard.cachedRows.unshift(gameboard.board[0])
+            gameboard.cachedDirection.unshift(gameboard.direction[0])
+            gameboard.board.shift()
+            gameboard.direction.shift()
+            gameboard.board.push(gameboard.cachedRows)
+            frogger.rows--
+        }
+    },
+    generateRow() {
+        let rowNum = Math.floor(Math.random() * 7) + 1
+        if (rowNum === 1) {
+            gameboard.direction.unshift(0)
+            gameboard.board.unshift([3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
+        } else if (rowNum === 2 || rowNum === 3 || rowNum === 4) {
+            pattern = Math.floor(Math.random() * 7) + 1
+            if (pattern === 1) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.one)
+                gameboard.eastWest *= -1
+            } else if (pattern === 2) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.two)
+                gameboard.eastWest *= -1
+            } else if (pattern === 3) { 
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.three)
+                gameboard.eastWest *= -1
+            } else if (pattern === 4) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.four) 
+                gameboard.eastWest *= -1
+            } else if (pattern === 5) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.five) 
+                gameboard.eastWest *= -1
+            } else if (pattern === 6) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.six) 
+                gameboard.eastWest *= -1
+            } else if (pattern === 7) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(riverPatterns.seven) 
+                gameboard.eastWest *= -1
+            }
+        } else if (rowNum === 5 || rowNum === 6 || rowNum === 7) {
+            pattern = Math.floor(Math.random() * 3) + 1
+            if (pattern === 1) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(roadPatterns.one)
+                gameboard.eastWest *= -1
+            } else if (pattern === 2) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(roadPatterns.two)
+                gameboard.eastWest *= -1
+            } else if (pattern === 3) {
+                gameboard.direction.unshift(gameboard.eastWest)
+                gameboard.board.unshift(roadPatterns.three)
+                gameboard.eastWest *= -1
+            }
+        }
+    },
+    generateBoard() {
+        gameboard.board.push( [3, 3, 3, 3, 3, -1, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
+        gameboard.direction.push(0, 0)
+        for (let i = 0; i < 9; i++) {
+            gameboard.generateRow()
+        }
+        console.log(gameboard.board, gameboard.direction)
+    },
+    reset() {
+        gameboard.board = []
+        gameboard.cachedRows = []
+        gameboard.direction = []
+        gameboard.cachedDirection = []
+        gameboard.eastWest = -1
+        carSplatRow = null
+        carSplatCol = null
     }
 }
 
+// gameboard.generateBoard()
+
 /*----- cached elements  -----*/
-const modal = document.querySelector('.modal')
-const startModal = document.querySelector('#startGameModal')
-const easyBtn = document.querySelector('#easyButton')
-const mediumBtn = document.querySelector('#mediumButton')
-const hardBtn = document.querySelector('#hardButton')
-const legendaryBtn = document.querySelector('#legendaryButton')
-const playBtn = document.querySelector('#playButton')
-const tryAgainBtn = document.querySelector('#tryAgainButton')
-const gameOverModal = document.querySelector('#gameOverModal')
-const nextLevelBtn = document.querySelector('#nextLevelButton')
-const winnerModal = document.querySelector('#winnerModal')
-const playAgainBtn = document.querySelector('#playAgainButton')
-const nextLevelModal = document.querySelector('#nextLevelModal')
-const playNxtBtn = document.querySelector('#playNextLevelButton')
-const schoolZnBtn = document.querySelector('#schoolZone')
-const highwayBtn = document.querySelector('#highway')
-const interstateBtn = document.querySelector('#interstate')
-const autobahnBtn = document.querySelector('#autobahn')
-const replayModal = document.querySelector('#replayModal')
-const level1Btn = document.querySelector('#level1')
-const level2Btn = document.querySelector('#level2')
+// const modal = document.querySelector('.modal')
+// const startModal = document.querySelector('#startGameModal')
+// const easyBtn = document.querySelector('#easyButton')
+// const mediumBtn = document.querySelector('#mediumButton')
+// const hardBtn = document.querySelector('#hardButton')
+// const legendaryBtn = document.querySelector('#legendaryButton')
+// const playBtn = document.querySelector('#playButton')
+// const tryAgainBtn = document.querySelector('#tryAgainButton')
+// const gameOverModal = document.querySelector('#gameOverModal')
+// const upButton = document.querySelector('#top')
+// const downButton = document.querySelector('#bottom')
+// const leftButton = document.querySelector('#left')
+// const rightButton = document.querySelector('#right')
 
-const boardHTML = document.querySelector('#gameboard')
+// const boardHTML = document.querySelector('#gameboard')
 
-// audio files
-const intro = document.querySelector('#intro')
-const hop = document.querySelector('#hop')
-const plunk = document.querySelector('#plunk')
-const theme = document.querySelector('#theme')
+/*----- audio files -----*/
+// const intro = document.querySelector('#intro')
+// const hop = document.querySelector('#hop')
+// const plunk = document.querySelector('#plunk')
+// const theme = document.querySelector('#theme')
 
 /*----- event listeners -----*/
-addEventListener('keydown', (event) => {
-    if (event.code == 'ArrowUp' || event.code == 'KeyW') {
-        frogger.hopForward()
-    } else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
-        frogger.hopBackward()
-    } else if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-        frogger.hopLeft()
-    } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-        frogger.hopRight()
+// addEventListener('keydown', (event) => {
+//     if (event.code == 'ArrowUp' || event.code == 'KeyW') {
+//         frogger.hopForward()
+//     } else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
+//         frogger.hopBackward()
+//     } else if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
+//         frogger.hopLeft()
+//     } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
+//         frogger.hopRight()
+//     }
+// })
+
+addEventListener('click', (event) => {
+    if (event === upButton) {
+        frogger.hopForward
     }
 })
 
-easyBtn.addEventListener('click', (e) => {
-    easyBtn.classList.add('speed')
-    mediumBtn.classList.remove('speed')
-    hardBtn.classList.remove('speed')
-    legendaryBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 1500
-    console.log(intervalSpeed)
-})
+// easyBtn.addEventListener('click', (e) => {
+//     easyBtn.classList.add('speed')
+//     mediumBtn.classList.remove('speed')
+//     hardBtn.classList.remove('speed')
+//     legendaryBtn.classList.remove('speed')
+//     console.log(intervalSpeed)
+//     intervalSpeed = 1500
+//     console.log(intervalSpeed)
+// })
 
-mediumBtn.addEventListener('click', (e) => {
-    mediumBtn.classList.add('speed')
-    easyBtn.classList.remove('speed')
-    hardBtn.classList.remove('speed')
-    legendaryBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 900
-    console.log(intervalSpeed)
-})
+// mediumBtn.addEventListener('click', (e) => {
+//     mediumBtn.classList.add('speed')
+//     easyBtn.classList.remove('speed')
+//     hardBtn.classList.remove('speed')
+//     legendaryBtn.classList.remove('speed')
+//     console.log(intervalSpeed)
+//     intervalSpeed = 900
+//     console.log(intervalSpeed)
+// })
 
-hardBtn.addEventListener('click', (e) => {
-    hardBtn.classList.add('speed')
-    easyBtn.classList.remove('speed')
-    mediumBtn.classList.remove('speed')
-    legendaryBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 650
-    console.log(intervalSpeed)
-})
+// hardBtn.addEventListener('click', (e) => {
+//     hardBtn.classList.add('speed')
+//     easyBtn.classList.remove('speed')
+//     mediumBtn.classList.remove('speed')
+//     legendaryBtn.classList.remove('speed')
+//     console.log(intervalSpeed)
+//     intervalSpeed = 650
+//     console.log(intervalSpeed)
+// })
 
-legendaryBtn.addEventListener('click', (e) => {
-    legendaryBtn.classList.add('speed')
-    easyBtn.classList.remove('speed')
-    mediumBtn.classList.remove('speed')
-    hardBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 300
-    console.log(intervalSpeed)
-})
+// legendaryBtn.addEventListener('click', (e) => {
+//     legendaryBtn.classList.add('speed')
+//     easyBtn.classList.remove('speed')
+//     mediumBtn.classList.remove('speed')
+//     hardBtn.classList.remove('speed')
+//     console.log(intervalSpeed)
+//     intervalSpeed = 300
+//     console.log(intervalSpeed)
+// })
 
-playBtn.addEventListener('click', (e) => {
-    intro.pause()
-    startModal.classList.add('close')
-    modal.classList.add('close')
-    init() 
-})
+// playBtn.addEventListener('click', (e) => {
+//     intro.pause()
+//     startModal.classList.add('close')
+//     modal.classList.add('close')
+//     init() 
+// })
 
-playAgainBtn.addEventListener('click', (e) => {
-    winnerModal.classList.remove('open')
-    startModal.classList.remove('close')
-    intro.play()
-})
+// playAgainBtn.addEventListener('click', (e) => {
+//     startModal.classList.remove('close')
+//     intro.play()
+// })
 
-tryAgainBtn.addEventListener('click', (e) => {
-    gameOverModal.classList.remove('open')
-    modal.classList.add('close')
-    init() 
-})
+// tryAgainBtn.addEventListener('click', (e) => {
+//     gameOverModal.classList.remove('open')
+//     modal.classList.add('close')
+//     init() 
+// })
 
-nextLevelBtn.addEventListener('click', (e) => {
-    winnerModal.classList.remove('open')
-    nextLevelModal.classList.add('open')
-    level = 2   
-})
-
-playNxtBtn.addEventListener('click', (e) => {
-    intro.pause()
-    nextLevelModal.classList.remove('open')
-    modal.classList.add('close')
-    init() 
-})
-
-schoolZnBtn.addEventListener('click', (e) => {
-    schoolZnBtn.classList.add('speed')
-    highwayBtn.classList.remove('speed')
-    interstateBtn.classList.remove('speed')
-    autobahnBtn.classList.remove('speed')
-    intervalSpeed = 1500
-})
-
-highwayBtn.addEventListener('click', (e) => {
-    highwayBtn.classList.add('speed')
-    schoolZnBtn.classList.remove('speed')
-    interstateBtn.classList.remove('speed')
-    autobahnBtn.classList.remove('speed')
-    intervalSpeed = 900
-})
-
-interstateBtn.addEventListener('click', (e) => {
-    interstateBtn.classList.add('speed')
-    schoolZnBtn.classList.remove('speed')
-    highwayBtn.classList.remove('speed')
-    autobahnBtn.classList.remove('speed')
-    intervalSpeed = 650
-})
-
-autobahnBtn.addEventListener('click', (e) => {
-    autobahnBtn.classList.add('speed')
-    schoolZnBtn.classList.remove('speed')
-    highwayBtn.classList.remove('speed')
-    interstateBtn.classList.remove('speed')
-    intervalSpeed = 300
-})
-
-level1Btn.addEventListener('click', (e) => {
-    replayModal.classList.remove('open')
-    level = 1
-    startModal.classList.remove('close')
-})
-
-level2Btn.addEventListener('click', (e) => {
-    replayModal.classList.remove('open')
-    level = 2
-    nextLevelModal.classList.add('open')
-})
 
 /*----- functions -----*/ 
 
 /* board functions */
 function init() {
     boardHTML.classList.add('open')
-    froggerReset()
-    randomBoard()
-    setRows()
-    frogHop = gameboard.row10
+    frogger.reset()
+    gameboard.reset()
+    // gameboard.setRows()
+    gameboard.generateBoard()
+    frogHop = gameboard.board[9]
     render()    
-}
-
-function setRows() {
-gameboard = new Board(board[0], board[1], board[2], board[3], board[4], board[5], board[6], board[7], board[8], board[9], board[10])
 }
 
 function render() {
@@ -313,66 +368,11 @@ function render() {
     if (intervalSpeed === null) {
         intervalSpeed = 1000
     }
-
-    if (level === 1) {
-        riverInterval = setInterval(riverFlow, intervalSpeed) 
-    } else if (level === 2) {  
-        trafficInterval = setInterval(traffic, intervalSpeed)
-    }
+        boardInterval = setInterval(riverFlow, intervalSpeed)     
     theme.play()
 }
 
-function randomBoard() {
-    for (let i = 0; i < 11; i++) {
-        let rowNum = Math.floor(Math.random() * 7) + 1
-        if (i === 0 || i === 10 || rowNum === 1) {
-            rowType = 'ground'
-            rowTypeArr.push(rowType)
-        } else if (rowNum === 2 || rowNum === 3 || rowNum === 4) {
-            rowType = 'river'
-            rowTypeArr.push(rowType)
-        } else if (rowNum === 5 || rowNum === 6 || rowNum === 7) {
-            rowType = 'road'
-            roadDirection = Math.floor(Math.random() * 2) + 1
-            rowTypeArr.push(rowType)
-        }
-        gameboardType = new Board(rowTypeArr[0], rowTypeArr[1], rowTypeArr[2], rowTypeArr[3], rowTypeArr[4], rowTypeArr[5], rowTypeArr[6], rowTypeArr[7], rowTypeArr[8], rowTypeArr[9], rowTypeArr[10]);
-        console.log(gameboardType)
-    }
-    generateColumns()
-    function generateColumns() {
-        let arr = Object.values(gameboardType)
-        console.log(arr)
-    for (let i = 0; i < arr.length; i++) {
-        let pattern
-        if (i === 10) {
-            board.push([3, 3, 3, 3, 3, -1, 3, 3, 3, 3])
-        } else if (arr[i] === 'ground') {
-            board.push([3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
-        } else if (arr[i] === 'road') {
-            pattern = Math.floor(Math.random() * 3) + 1
-                if (pattern === 1) {
-                    board.push(roadPatterns.one)
-                } else if (pattern === 2) {
-                    board.push(roadPatterns.two)
-                } else if (pattern === 3) {
-                    board.push(roadPatterns.three)
-                }
-        } else if (arr[i] = 'river') {
-            pattern = Math.floor(Math.random() * 4) + 1
-            if (pattern === 1) {
-                board.push(riverPatterns.one)
-            } else if (pattern === 2) {
-                board.push(riverPatterns.two)
-            } else if (pattern === 3) { 
-                    board.push(riverPatterns.three)
-                } else if (pattern === 4) {
-                    board.push(riverPatterns.four)  //idx 3 or idx 6
-                }
-            } 
-        }
-    }
-}
+// NOTE TO SELF: Make four buttons (style them to look really cool like an arcade! be sure to style them with breakpoints so they only display for smaller screen sizes) that allow digital users on their phones to 'click' and play (which means adding these buttons to the event listeners)
 
 function renderBoard() {
     for (let i = 0; i < board.length; i++) {
@@ -385,95 +385,128 @@ function renderBoard() {
             }
         }
     }
+    document.querySelector("score").innerHTML = `${frogger.score}`
+    frogger.score > highScore ? highScore = frogger.score : highScore = highScore
 }
 
 /* riverInterval */
 function riverFlow() {
     checkScore()
-        if (gameboard.row1[6] === 1 || gameboard.row1[6] === -1) {
-            gameboard.row1.push(1)
-        } else {
-            gameboard.row1.push(0)
-        }
-        gameboard.row1.shift()
+    let right = frogger.column
+    let left = frogger.column - 2
+    for (let i = 0; i < gameboard.board.length; i++) {
+        //river()
+        if (gameboard.board[i].includes(0) === true) {
+            if (gameboard.direction[i] === -1){
+                if (gameboard.board[i] === riverPatterns.one) {
 
-        if (gameboard.row2[3] === 1 || gameboard.row2[3] === -1) {
-            gameboard.row2.unshift(1)
-        } else {
-            gameboard.row2.unshift(0)
-        }
-        gameboard.row2.pop()
+                } else if (gameboard.board[i] === riverPatterns.two) {
 
-        if (gameboard.row3[7] === 1 || gameboard.row3[7] === -1){
-            gameboard.row3.push(1)
-        } else {
-            gameboard.row3.push(0)
-        }
-        gameboard.row3.shift()
+                } else if (gameboard.board[i] === riverPatterns.three) {
 
-        if (gameboard.row6[3] === 1 || gameboard.row6[3] === -1) {
-            gameboard.row6.unshift(1)
-        } else {
-            gameboard.row6.unshift(0)
-        }
-        gameboard.row6.pop()
+                } else if (gameboard.board[i] === riverPatterns.four) {
 
-        if (gameboard.row7[6] === 1 || gameboard.row7[6] === -1) {
-            gameboard.row7.push(1)
-        } else {
-            gameboard.row7.push(0)
-        }
-        gameboard.row7.shift()
+                } else if (gameboard.board[i] === riverPatterns.five) {
 
-        if (gameboard.row9[2] === 1 || gameboard.row9[2] === -1) {
-            gameboard.row9.unshift(1)
-        } else {
-            gameboard.row9.unshift(0)
-        }
-        gameboard.row9.pop()
-    froggerLogger()
+                } else if (gameboard.board[i] === riverPatterns.six) {
+
+                } else if (gameboard.board[i] === riverPatterns.seven) {
+                
+                }
+                froggerLogger()
+            } else if (gameboard.direction[i] === 1) {
+                if (gameboard.board[i] === riverPatterns.one) {
+
+                } else if (gameboard.board[i] === riverPatterns.two) {
+
+                } else if (gameboard.board[i] === riverPatterns.three) {
+
+                } else if (gameboard.board[i] === riverPatterns.four) {
+
+                } else if (gameboard.board[i] === riverPatterns.five) {
+
+                } else if (gameboard.board[i] === riverPatterns.six) {
+
+                } else if (gameboard.board[i] === riverPatterns.seven) {
+                
+                }
+                froggerLogger()
+            } 
+        } else if (gameboard.board[i].includes(0) === false && gameboard.board[i].includes(3) === false) {
+            if (gameboard.direction[i] === -1) {
+            carSplatCol = frogHop[right]
+            carSplatRow = frogger.row 
+            entranceRamp(gameboard.board[i])
+            } else if (gameboard.direction[i] === 1){
+            carSplatCol = frogHop[left]
+            carSplatRow = frogger.row
+            exitRamp(gameboard.board[i])
+            }
+            stationaryFrogger()
+            carSplat()
+        }   
+    }
+            // if (gameboard.row1[6] === 1 || gameboard.row1[6] === -1) {
+            //     gameboard.row1.push(1)
+            // } else {
+            //     gameboard.row1.push(0)
+            // }
+            // gameboard.row1.shift()
+
+            // if (gameboard.row2[3] === 1 || gameboard.row2[3] === -1) {
+            //     gameboard.row2.unshift(1)
+            // } else {
+            //     gameboard.row2.unshift(0)
+            // }
+            // gameboard.row2.pop()
+
+            // if (gameboard.row3[7] === 1 || gameboard.row3[7] === -1){
+            //     gameboard.row3.push(1)
+            // } else {
+            //     gameboard.row3.push(0)
+            // }
+            // gameboard.row3.shift()
+
+            // if (gameboard.row6[3] === 1 || gameboard.row6[3] === -1) {
+            //     gameboard.row6.unshift(1)
+            // } else {
+            //     gameboard.row6.unshift(0)
+            // }
+            // gameboard.row6.pop()
+
+            // if (gameboard.row7[6] === 1 || gameboard.row7[6] === -1) {
+            //     gameboard.row7.push(1)
+            // } else {
+            //     gameboard.row7.push(0)
+            // }
+            // gameboard.row7.shift()
+
+            // if (gameboard.row9[2] === 1 || gameboard.row9[2] === -1) {
+            //     gameboard.row9.unshift(1)
+            // } else {
+            //     gameboard.row9.unshift(0)
+            // }
+            // gameboard.row9.pop()
+
+        
+    //traffic()
+    // let right = frogger.column
+    // let left = frogger.column - 2
+    checkScore()
     renderBoard()
 }
 
 function froggerLogger() {
-    if (frogger.row === 1 || frogger.row === 3 || frogger.row === 7) {
-        frogger.column--
-    } else if (frogger.row === 2 || frogger.row === 6 || frogger.row === 9) {
-        frogger.column++
+    if (gameboard.board[9].includes(0) === true) {
+        gameboard.direction[9] === -1 ? frogger.columnn-- : frogger.column++
     }
 }
 
 /* trafficInterval */
-function traffic() {
-    let right = frogger.column
-    let left = frogger.column - 2
-    carSplat()
-    checkScore()
-    if (frogger.row === 1 || frogger.row === 3 || frogger.row === 5 || frogger.row === 7 || frogger.row === 9) {
-        carSplatCol = frogHop[right]
-        carSplatRow = frogger.row 
-    } else if (frogger.row === 2 || frogger.row === 4 || frogger.row === 6 || frogger.row === 8) {
-        carSplatCol = frogHop[left]
-        carSplatRow = frogger.row
-    }
-    entranceRamp(gameboard.row1)
-    exitRamp(gameboard.row2)
-    entranceRamp(gameboard.row3)
-    exitRamp(gameboard.row4)
-    entranceRamp(gameboard.row5)
-    exitRamp(gameboard.row6)
-    entranceRamp(gameboard.row7)
-    exitRamp(gameboard.row8)
-    entranceRamp(gameboard.row9)
-    stationaryFrogger()
-    renderBoard()
-}
 
 function carSplat() {
     if (frogger.row === carSplatRow && carSplatCol === 4 || carSplatCol === 5 || carSplatCol === 6 || carSplatCol === 7 || carSplatCol === 8 || carSplatCol === 9 || carSplatCol === 10) {
         gameOver()
-        carSplatRow = null
-        carSplatCol = null
         }
 }
 
@@ -481,53 +514,72 @@ function stationaryFrogger() {
     let right = frogger.column
     let left = frogger.column - 2       //possibly could turn these if else if statements dryer by using a for loop...
     let center = frogger.column - 1 
-    if (frogger.row === 9) {
-        frogger.previousColorRight = gameboard.row9[right]
-        gameboard.row9.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row9.splice(center, 1, -1) //middle
-        gameboard.row9.splice(left, 1, 1) //left        
-    } else if (gameboard.row8.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row8[left]
-        gameboard.row8.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row8.splice(center, 1, -1) //middle
-        gameboard.row8.splice(right, 1, 1) //left  
-    } else if (gameboard.row7.includes(-1)) {
-        frogger.previousColorRight = gameboard.row7[right]
-        gameboard.row7.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row7.splice(center, 1, -1) //middle
-        gameboard.row7.splice(left, 1, 1) //left  
-    } else if (gameboard.row6.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row6[left]
-        gameboard.row6.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row6.splice(center, 1, -1) //middle
-        gameboard.row6.splice(right, 1, 1) //left  
-    } else if (gameboard.row5.includes(-1)) {
-        frogger.previousColorRight = gameboard.row5[right]
-        gameboard.row5.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row5.splice(center, 1, -1) //middle
-        gameboard.row5.splice(left, 1, 1) //left  
-    } else if (gameboard.row4.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row4[left]
-        gameboard.row4.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row4.splice(center, 1, -1) //middle
-        gameboard.row4.splice(right, 1, 1) //left  
-    } else if (gameboard.row3.includes(-1)) {
-        frogger.previousColorRight = gameboard.row3[right]
-        gameboard.row3.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row3.splice(center, 1, -1) //middle
-        gameboard.row3.splice(left, 1, 1) //left  
-    } else if (gameboard.row2.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row2[left]
-        gameboard.row2.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row2.splice(center, 1, -1) //middle
-        gameboard.row2.splice(right, 1, 1) //left  
-    } else if (gameboard.row1.includes(-1)) {
-        frogger.previousColorRight = gameboard.row1[right]
-        gameboard.row1.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row1.splice(center, 1, -1) //middle
-        gameboard.row1.splice(left, 1, 1) //left  
+    // if (frogger.rows === 0) {
+    //     frogger.previousColorRight = gameboard.board[9][right]
+    //     gameboard.row9.splice(right, 1, frogger.previousColorRight) //right
+    //     gameboard.row9.splice(center, 1, -1) //middle
+    //     gameboard.row9.splice(left, 1, 1) //left        
+    // } else if (gameboard.board[9].includes(0) === true) {
+    //     if (gameboard.direction[9] === -1) {
+
+    //     } else if (gameboard.direction[9] === 1) {
+    //          
+    //     }
+    if (gameboard.direction[9] === -1) {
+        frogger.previousColorRight = gameboard.board[9][right]
+        gameboard.board[9].splice(right, 1, frogger.previousColorRight) //right
+        gameboard.board[9].splice(center, 1, -1) //middle
+        gameboard.board[9].splice(left, 1, 1) //left  
+    } else if (gameboard.direction[9] === 1) {
+        frogger.previousColorLeft = gameboard.board[9][left]
+        gameboard.board[9].splice(left, 1, frogger.previousColorLeft) //right
+        gameboard.board[9].splice(center, 1, -1) //middle
+        gameboard.board[9].splice(right, 1, 1) //left  
     }
 }
+    
+    // else if (gameboard.row8.includes(-1)) {
+    //     frogger.previousColorLeft = gameboard.row8[left]
+    //     gameboard.row8.splice(left, 1, frogger.previousColorLeft) //right
+    //     gameboard.row8.splice(center, 1, -1) //middle
+    //     gameboard.row8.splice(right, 1, 1) //left  
+    // } else if (gameboard.row7.includes(-1)) {
+    //     frogger.previousColorRight = gameboard.row7[right]
+    //     gameboard.row7.splice(right, 1, frogger.previousColorRight) //right
+    //     gameboard.row7.splice(center, 1, -1) //middle
+    //     gameboard.row7.splice(left, 1, 1) //left  
+    // } else if (gameboard.row6.includes(-1)) {
+    //     frogger.previousColorLeft = gameboard.row6[left]
+    //     gameboard.row6.splice(left, 1, frogger.previousColorLeft) //right
+    //     gameboard.row6.splice(center, 1, -1) //middle
+    //     gameboard.row6.splice(right, 1, 1) //left  
+    // } else if (gameboard.row5.includes(-1)) {
+    //     frogger.previousColorRight = gameboard.row5[right]
+    //     gameboard.row5.splice(right, 1, frogger.previousColorRight) //right
+    //     gameboard.row5.splice(center, 1, -1) //middle
+    //     gameboard.row5.splice(left, 1, 1) //left  
+    // } else if (gameboard.row4.includes(-1)) {
+    //     frogger.previousColorLeft = gameboard.row4[left]
+    //     gameboard.row4.splice(left, 1, frogger.previousColorLeft) //right
+    //     gameboard.row4.splice(center, 1, -1) //middle
+    //     gameboard.row4.splice(right, 1, 1) //left  
+    // } else if (gameboard.row3.includes(-1)) {
+    //     frogger.previousColorRight = gameboard.row3[right]
+    //     gameboard.row3.splice(right, 1, frogger.previousColorRight) //right
+    //     gameboard.row3.splice(center, 1, -1) //middle
+    //     gameboard.row3.splice(left, 1, 1) //left  
+    // } else if (gameboard.row2.includes(-1)) {
+    //     frogger.previousColorLeft = gameboard.row2[left]
+    //     gameboard.row2.splice(left, 1, frogger.previousColorLeft) //right
+    //     gameboard.row2.splice(center, 1, -1) //middle
+    //     gameboard.row2.splice(right, 1, 1) //left  
+    // } else if (gameboard.row1.includes(-1)) {
+    //     frogger.previousColorRight = gameboard.row1[right]
+    //     gameboard.row1.splice(right, 1, frogger.previousColorRight) //right
+    //     gameboard.row1.splice(center, 1, -1) //middle
+    //     gameboard.row1.splice(left, 1, 1) //left  
+    // }
+// }
 
 const entranceRamp = (arr) => {
     let car
@@ -553,48 +605,18 @@ const exitRamp = (arr) => {
         arr.pop()
 }
 
-/* scoring and reset functions */
-function froggerReset() {
-    frogger.row = 10
-    frogger.column = 6
-    frogger.previousColor = 3
-    frogger.previousColorLeft = null
-    frogger.previousColorRight = null
-    frogger.life = -1
-}
+/* scoring functions */
 
 const checkScore = () => {
     if (frogger.life === 0 ) { 
         gameOver()
-    } else if (gameboard.row0.includes(-1) === false && gameboard.row1.includes(-1) === false && gameboard.row2.includes(-1) === false && gameboard.row3.includes(-1) === false && gameboard.row4.includes(-1) === false && gameboard.row5.includes(-1) === false && gameboard.row6.includes(-1) === false && gameboard.row7.includes(-1) === false && gameboard.row8.includes(-1) === false && gameboard.row9.includes(-1) === false && gameboard.row10.includes(-1) === false) {
+    } else if (gameboard.board[9].includes(-1) === false) {
         gameOver()
-    } else if (frogger.row === 0 || gameboard.row0.includes(-1)) {
-        winner()
     }
-}
-
-function winner() {
-    if (level === 1) {
-        clearInterval(riverInterval)
-        boardHTML.classList.remove('open')
-        modal.classList.remove('close')
-        winnerModal.classList.add('open')
-    } else if (level === 2) {
-        clearInterval(trafficInterval)
-        boardHTML.classList.remove('open')
-        replayModal.classList.add('open')
-        modal.classList.remove('close')
-    }
-    
-    theme.pause()
 }
 
 function gameOver() {
-    if (level === 1) {
-        clearInterval(riverInterval)
-    } else if (level === 2 ) {
-        clearInterval(trafficInterval)
-    }
+    clearInterval(boardInterval)
     theme.pause()
     plunk.play()
     boardHTML.classList.remove('open')

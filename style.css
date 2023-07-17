@@ -81,3 +81,7 @@ Button:hover {
 #gameOverModal.open, #winnerModal.open, #nextLevelModal.open, #replayModal.open {
     display: block
 }
+
+media only screen and (min-width: 500px) {
+
+}
