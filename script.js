@@ -33,6 +33,7 @@ let frogger = {
     /* Hopping functions as methods */
     hopForward() {
         this.hopBack === 0 ? this.score++ : this.hopBack--
+        gameboard.board[8][this.column - 1] === 0 ? (this.life = 0, checkScore()) : this.life = 1
         //change frogger square color to preset value.
         frogHop.splice(this.column -1, 1, this.previousColor)
         this.row = this.row -1
@@ -46,11 +47,13 @@ let frogger = {
         //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
         frogHop.splice(this.column -1, 1, this.number)
         this.row = 9
+        console.log(gameboard.board)
         gameboard.scrollDown()
         hop.play()
         renderBoard()
     },
     hopLeft() {
+        gameboard.board[9][this.column - 2] === 0 ? (this.life = 0, checkScore()) : this.life = 1
         //change frogger square color to preset value
         frogHop.splice(this.column -1, 1, this.previousColor)
         this.column = this.column - 1
@@ -67,6 +70,8 @@ let frogger = {
         renderBoard()
     },
     hopRight() {
+        gameboard.board[9][this.column] === 0 ? (this.life = 0, checkScore()) : this.life = 1
+
         //change frogger square color to preset value
         frogHop.splice(this.column -1, 1, this.previousColor)
         this.column = this.column + 1
@@ -83,25 +88,31 @@ let frogger = {
         renderBoard()
     },
     hopBackward(){
-        //change frogger square color to preset value
-        frogHop.splice(this.column -1, 1, this.previousColor)
-        this.row = this.row + 1
-        //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-        frogHop = gameboard.board[this.row]
-        if (frogHop[this.column - 1] === 4 || frogHop[this.column - 1] === 5 || frogHop[this.column - 1] === 6 || frogHop[this.column - 1] === 7 || frogHop[this.column - 1] === 8 || frogHop[this.column - 1] === 9 || frogHop[this.column - 1] === 10) {
-            gameOver()
+        gameboard.board[10][this.column - 1] === 0 ? (this.life = 0, checkScore()) : this.life = 1
+        if (frogger.rows === 0) { 
+            alert('Uh Oh! frogger needs to move forward!') 
+        } else {
+            //change frogger square color to preset value
+            frogHop.splice(this.column -1, 1, this.previousColor)
+            this.row = this.row + 1
+            //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
+            frogHop = gameboard.board[this.row]
+            // if (frogHop[this.column - 1] === 4 || frogHop[this.column - 1] === 5 || frogHop[this.column - 1] === 6 || frogHop[this.column - 1] === 7 || frogHop[this.column - 1] === 8 || frogHop[this.column - 1] === 9 || frogHop[this.column - 1] === 10) {
+            //     gameOver()
+            // }
+            this.previousColor = frogHop[this.column -1]
+            this.life = this.life * frogHop[this.column -1]
+            //change the color of the space frogger jumps to.
+            frogHop.splice(this.column -1, 1, this.number)
+            this.row = 9
+            this.hopBack++
+            gameboard.scrollUp()
+            hop.play()
+            console.log(gameboard.board)
+            renderBoard()
         }
-        this.previousColor = frogHop[this.column -1]
-        this.life = this.life * frogHop[this.column -1]
-        //change the color of the space frogger jumps to.
-        frogHop.splice(this.column -1, 1, this.number)
-        this.row = 9
-        this.hopBack++
-        gameboard.scrollUp()
-        hop.play()
-        renderBoard()
     },
-    reset(){
+    reset() {
         this.row = 9
         this.column = 6
         this.previousColor = 3
@@ -109,6 +120,9 @@ let frogger = {
         this.previousColorRight = null
         this.life = -1
         this.score = 0
+        this.hopBack = 0,
+        this.rows = 0,
+        frogHop = null
     }
 }
 
@@ -162,16 +176,13 @@ let gameboard = {
             this.board.pop()
             this.cachedDirection.push(this.direction[10])
             this.direction.pop()
-            this.cachedRowType.push(this.rowType)
+            this.cachedRowType.push(this.rowType[10])
             this.rowType.pop()
             this.generateRow()
         }
         frogger.rows++
     },
     scrollUp() {
-        if (frogger.rows === 0) { 
-            alert('Uh Oh! frogger needs to move forward!') 
-        } else {
             frogger.hopBack++
             this.cachedRows.unshift(this.board[0])
             this.cachedDirection.unshift(this.direction[0])
@@ -179,11 +190,17 @@ let gameboard = {
             this.board.shift()
             this.direction.shift()
             this.rowType.shift()
-            this.board.push(this.cachedRows[this.cachedRows.length - 1])
-            this.rowType.push(this.cachedRowType[this.cachedRowType.length - 1])
+
+            let cachedRowType = this.cachedRowType[this.cachedRowType.length - 1]
+            cachedRowType === 'riverOne' ? this.board.push(riverPatterns.one) : (cachedRowType === 'riverTwo' ? this.board.push(riverPatterns.two) : (cachedRowType === 'riverThree' ? this.board.push(riverPatterns.three) : (cachedRowType === 'riverFour' ? this.board.push(riverPatterns.four) : (cachedRowType === 'riverFive' ? this.board.push(riverPatterns.five) : (cachedRowType === 'riverSix' ? this.board.push(riverPatterns.six) : (cachedRowType === 'riverSeven' ? this.board.push(riverPatterns.seven) : (cachedRowType === 'roadOne' ? this.board.push(roadPatterns.one) : (cachedRowType === 'roadTwo' ? this.board.push(roadPatterns.two) : (cachedRowType === 'roadThree' ? this.board.push(roadPatterns.three) : (cachedRowType === 'ground' ? this.board.push([3, 3, 3, 3, 3, 3, 3, 3, 3, 3]) : (alert('cachedRows is broken!'))))))))))))
+            // this.board.push(this.cachedRows[this.cachedRows.length - 1])
+            this.rowType.push(cachedRowType)
             this.direction.push(this.cachedDirection[this.cachedDirection.length - 1])
             frogger.rows--
-        }
+
+            this.cachedRows.pop()
+            this.cachedDirection.pop()
+            this.cachedRowType.pop()
     },
     generateRow() {
         let rowNum = Math.floor(Math.random() * 7) + 1
@@ -253,9 +270,51 @@ let gameboard = {
         this.board.push( [3, 3, 3, 3, 3, -1, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
         this.direction.push(0, 0)
         this.rowType.push('ground', 'ground')
-        for (let i = 0; i < 9; i++) {
-            this.generateRow()
-        }
+        //riverOne
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(riverPatterns.one)
+        this.eastWest *= -1
+        this.rowType.unshift('riverOne')
+        //riverTwo    
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(riverPatterns.two)
+        this.eastWest *= -1
+        this.rowType.unshift('riverTwo')
+        //riverThree
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(riverPatterns.three)
+        this.eastWest *= -1
+        this.rowType.unshift('riverThree')
+        //ground
+        this.direction.unshift(0)
+        this.board.unshift([3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
+        this.eastWest *= -1
+        this.rowType.unshift('ground')
+        //roadOne
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(roadPatterns.one)
+        this.eastWest *= -1
+        this.rowType.unshift('roadOne')
+        //roadTwo
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(roadPatterns.two)
+        this.eastWest *= -1
+        this.rowType.unshift('roadTwo')
+        //riverFive
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(riverPatterns.five) 
+        this.eastWest *= -1
+        this.rowType.unshift('riverFive')
+        //riverSix
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(riverPatterns.six)
+        this.eastWest *= -1 
+        this.rowType.unshift('riverSix')
+        //riverSeven
+        this.direction.unshift(this.eastWest)
+        this.board.unshift(riverPatterns.seven) 
+        this.eastWest *= -1
+        this.rowType.unshift('riverSeven')
         console.log(this.board, this.direction, this.rowType, riverPatterns, roadPatterns)
     },
     reset() {
@@ -263,9 +322,21 @@ let gameboard = {
         this.cachedRows = []
         this.direction = []
         this.cachedDirection = []
+        this.rowType = []
+        this.cachedRowType = []
         this.eastWest = -1
         carSplatRow = null
         carSplatCol = null
+        riverPatterns.one = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+        riverPatterns.two = [1, 1, 0, 1, 1, 0, 1, 1, 0, 1] 
+        riverPatterns.three = [1, 0, 0, 1, 0, 0, 1, 0, 0, 1]
+        riverPatterns.four = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+        riverPatterns.five = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0]
+        riverPatterns.six = [0, 1, 0, 0, 0, 1, 0, 0, 0, 1]
+        riverPatterns.seven = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+        roadPatterns.one = [1, 1, 1, 4, 1, 6, 1, 9, 1, 1]
+        roadPatterns.two = [1, 8, 1, 1, 7, 1, 9, 10, 1, 4] 
+        roadPatterns.three = [5, 1, 1, 6, 8, 1, 1, 5, 1, 10]
     }
 }
 
@@ -286,6 +357,8 @@ const downButton = document.querySelector('#bottom')
 const leftButton = document.querySelector('#left')
 const rightButton = document.querySelector('#right')
 const gamePad = document.querySelector('.gameButtons')
+
+const interval = document.querySelector('#riverFlow')
 
 const boardHTML = document.querySelector('#gameboard')
 
@@ -308,11 +381,23 @@ addEventListener('keydown', (event) => {
     }
 })
 
-// addEventListener('click', (event) => {
-//     if (event === upButton) {
-//         frogger.hopForward
-//     }
-// })
+upButton.addEventListener('click', (e) => {
+    frogger.hopForward()
+})
+downButton.addEventListener('click', (e) => {
+    frogger.hopBackward()
+})
+leftButton.addEventListener('click', (e) => {
+    frogger.hopLeft()
+})
+rightButton.addEventListener('click', (e) => {
+    frogger.hopRight()
+})
+
+
+interval.addEventListener('click', (e) => {
+    riverFlow()
+})
 
 easyBtn.addEventListener('click', (e) => {
     easyBtn.classList.add('speed')
@@ -387,7 +472,7 @@ function render() {
         intervalSpeed = 1000
     }
     renderBoard()
-    // boardInterval = setInterval(riverFlow, intervalSpeed)     
+    boardInterval = setInterval(riverFlow, intervalSpeed)     
     theme.play()
 }
 
@@ -395,7 +480,6 @@ function render() {
 function renderBoard() {
     for (let i = 0; i < gameboard.board.length; i++) {
         innerArr = gameboard.board[i]
-        console.log(innerArr)
         generateRow()
         function generateRow() {
             for (let i = 0; i < innerArr.length; i++) {
@@ -416,87 +500,78 @@ function riverFlow() {
         if (gameboard.board[i].includes(0) === true) {
             if (gameboard.direction[i] === -1) {
                 if (gameboard.rowType[i] === "riverOne") {
-                    (gameboard.board[9][8] === 1 || gameboard.board[9][8] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()
-                    console.log(`riverOne -1 at ${i}`)
+                    (gameboard.board[i][8] === 1 || gameboard.board[i][8] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()
                 } else if (gameboard.rowType[i] === "riverTwo") {
-                    (gameboard.board[9][6] === 1 || gameboard.board[9][6] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()
-                    console.log(`riverTwo -1 at ${i}`)
+                    (gameboard.board[i][7] === 1 || gameboard.board[i][7] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()
                 } else if (gameboard.rowType[i] === "riverThree") {
-                    (gameboard.board[9][4] === 1 && gameboard.board[9][4] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()
-                    console.log(`riverThree -1 at ${i}`)
+                    (gameboard.board[i][7] === 1 || gameboard.board[i][7] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()
                 } else if (gameboard.rowType[i] === "riverFour") {
-                    (gameboard.board[9][7] === 1 || gameboard.board[9][7] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()
-                    console.log(`riverFour -1 at ${i}`)
+                    (gameboard.board[i][7] === 1 || gameboard.board[i][7] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()
                 } else if (gameboard.rowType[i] === "riverFive") {
-                    (gameboard.board[9][4] === 1 && gameboard.board[9][4] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()
-                    console.log(`riverFive -1 at ${i}`)
+                    (gameboard.board[i][5] === 1 || gameboard.board[i][5] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()
                 } else if (gameboard.rowType[i] === "riverSix") {
-                    (gameboard.board[9][7] === 1 || gameboard.board[9][7] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()
-                    console.log(`riverSix -1 at ${i}`)
+                    (gameboard.board[i][7] === 1 || gameboard.board[i][7] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()
                 } else if (gameboard.rowType[i] === "riverSeven") {
-                    (gameboard.board[9][3] === 1 || gameboard.board[9][3] === -1) ? gameboard.board[9].push(1) : gameboard.board[9].push(0)
-                    gameboard.board[9].shift()  
-                    console.log(`riverSeven -1 at ${i}`)
+                    (gameboard.board[i][3] === 1 || gameboard.board[i][3] === -1) ? gameboard.board[i].push(1) : gameboard.board[i].push(0)
+                    gameboard.board[i].shift()  
                 }
+            // froggerLogger() 
             } else if (gameboard.direction[i] === 1) {
                 if (gameboard.rowType[i] === "riverOne") {
-                    gameboard.board[9][1] === 1 || gameboard.board[9][1] === -1 ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverOne 1 at ${i}`)
+                    gameboard.board[i][2] === 1 || gameboard.board[i][1] === -1 ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 } else if (gameboard.rowType[i] === "riverTwo") {
-                    (gameboard.board[9][4] === 1 || gameboard.board[9][4] === -1) ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverTwo 1 at ${i}`)
+                    (gameboard.board[i][2] === 1 || gameboard.board[i][2] === -1) ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 } else if (gameboard.rowType[i] === "riverThree") {
-                    (gameboard.board[9][5] === 1 && gameboard.board[9][5] === -1) ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverThree 1 at ${i}`)
+                    (gameboard.board[i][2] === 1 || gameboard.board[i][2] === -1) ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 } else if (gameboard.rowType[i] === "riverFour") {
-                    (gameboard.board[9][2] === 1 || gameboard.board[9][2] === -1) ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverFour 1 at ${i}`)
+                    (gameboard.board[i][2] === 1 || gameboard.board[i][2] === -1) ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 } else if (gameboard.rowType[i] === "riverFive") {
-                    (gameboard.board[9][5] === 1 && gameboard.board[9][5] === -1) ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverFive 1 at ${i}`)
+                    (gameboard.board[i][3] === 1 || gameboard.board[i][3] === -1) ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 } else if (gameboard.rowType[i] === "riverSix") {
-                    (gameboard.board[9][3] === 1 || gameboard.board[9][3] === -1) ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverSix 1 at ${i}`)
+                    (gameboard.board[i][3] === 1 || gameboard.board[i][3] === -1) ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 } else if (gameboard.rowType[i] === "riverSeven") {
-                    (gameboard.board[9][5] === 1 || gameboard.board[9][5] === -1) ? gameboard.board[9].unshift(1) : gameboard.board[9].unshift(0)
-                    gameboard.board[9].pop()
-                    console.log(`riverSeven 1 at ${i}`)
+                    (gameboard.board[i][5] === 1 || gameboard.board[i][5] === -1) ? gameboard.board[i].unshift(1) : gameboard.board[i].unshift(0)
+                    gameboard.board[i].pop()
                 }
-                froggerLogger()    
-            } else if (gameboard.board[i].includes(0) === false && gameboard.board[i].includes(3) === false) {
-                if (gameboard.direction[i] === -1) {
+            }    
+        } else if (gameboard.board[i].includes(0) === false && gameboard.board[i].includes(3) === false) {
+            if (gameboard.direction[i] === -1) {
                 carSplatCol = frogHop[right]
                 carSplatRow = frogger.row 
                 entranceRamp(gameboard.board[i])
-                } else if (gameboard.direction[i] === 1){
+            } else if (gameboard.direction[i] === 1){
                 carSplatCol = frogHop[left]
                 carSplatRow = frogger.row
                 exitRamp(gameboard.board[i])
-                }
-                stationaryFrogger()
-                carSplat()
-            }   
-        }
+            }
+        }   
     }
+    stationaryFrogger()
+    carSplat()
+    froggerLogger() 
     checkScore()
     renderBoard()
 }
 
+
+
 function froggerLogger() {
     if (gameboard.board[9].includes(0) === true) {
-        gameboard.direction[9] === -1 ? frogger.columnn-- : frogger.column++
+        console.log(`froggerLogger ${frogger.column}`)
+        gameboard.direction[9] === -1 ? frogger.column-- : frogger.column++
+        console.log(`froggerLogger ${frogger.column}`)
     }
 }
 
@@ -521,19 +596,22 @@ function stationaryFrogger() {
     //     } else if (gameboard.direction[9] === 1) {
     //          
     //     }
-    if (gameboard.direction[9] === -1) {
-        frogger.previousColorRight = gameboard.board[9][right]
-        gameboard.board[9].splice(right, 1, frogger.previousColorRight) //right
-        gameboard.board[9].splice(center, 1, -1) //middle
-        gameboard.board[9].splice(left, 1, 1) //left  
-    } else if (gameboard.direction[9] === 1) {
-        frogger.previousColorLeft = gameboard.board[9][left]
-        gameboard.board[9].splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.board[9].splice(center, 1, -1) //middle
-        gameboard.board[9].splice(right, 1, 1) //left  
+    if (gameboard.board[9].includes(0) === false && gameboard.board[9].includes(3) === false){ 
+        console.log('roadhead!')
+        if (gameboard.direction[9] === -1) {
+            frogger.previousColorRight = gameboard.board[9][right]
+            gameboard.board[9].splice(right, 1, frogger.previousColorRight) //right
+            gameboard.board[9].splice(center, 1, -1) //middle
+            gameboard.board[9].splice(left, 1, 1) //left  
+        } else if (gameboard.direction[9] === 1) {
+            frogger.previousColorLeft = gameboard.board[9][left]
+            gameboard.board[9].splice(left, 1, frogger.previousColorLeft) //right
+            gameboard.board[9].splice(center, 1, -1) //middle
+            gameboard.board[9].splice(right, 1, 1) //left  
+        }
     }
 }
-
+// 3 -1; 5 1
 const entranceRamp = (arr) => {
     let car
     let diceRoll = Math.floor(Math.random() * 6) + 1

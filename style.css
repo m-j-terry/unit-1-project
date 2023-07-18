@@ -119,6 +119,12 @@ Button:hover {
     background-color: lightgray;
 }
 
+body, .score {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
 /* media only screen and (min-width: 500px) {
 
 } */
