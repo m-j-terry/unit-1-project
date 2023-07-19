@@ -597,7 +597,6 @@ function stationaryFrogger() {
     //          
     //     }
     if (gameboard.board[9].includes(0) === false && gameboard.board[9].includes(3) === false){ 
-        console.log('roadhead!')
         if (gameboard.direction[9] === -1) {
             frogger.previousColorRight = gameboard.board[9][right]
             gameboard.board[9].splice(right, 1, frogger.previousColorRight) //right
