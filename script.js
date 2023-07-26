@@ -1,567 +1,811 @@
 /*----- constants -----*/
 const colors = {
-    '3' : 'rgb(180,130,110)', //ground
-    '0' : 'rgb(100,149,237)', //water
-    '1' : 'gray', //lily-pads/logs
-    '-1' : 'green', //frogger
-    '4' : 'yellow', 
-    '5' : 'red', 
-    '6' : 'orange', 
-    '7' : 'purple', 
-    '8' : 'navy', 
-    '9' : 'brown', 
-    '10' : 'white'
-}
+3: "rgb(180,130,110)", //ground
+0: "rgb(100,149,237)", //water
+1: "gray", //lily-pads/logs
+"-1": "green", //frogger
+4: "yellow",
+5: "red",
+6: "orange",
+7: "purple",
+8: "navy",
+9: "brown",
+10: "white",
+};
 
 /*----- state variables -----*/
 
-let level = 1
-let innerArr
-let frogHop
-let intervalSpeed = 1000
-let frogger = {
-    number : -1,
-    row : 10,
-    column : 6,
-    previousColor : 3,
-    previousColorLeft : null,
-    previousColorRight : null,
-    life : -1
+class Row {
+constructor(data, next = null) {
+    (this.data = data), (this.next = next);
+}
 }
 
-let gameboard
-let board 
-let riverInterval
-let trafficInterval
-let carSplatCol
-let carSplatRow
-class Board {
-    constructor(row0, row1, row2, row3, row4, row5, row6, row7, row8, row9, row10) {
-    this.row0 = row0,
-    this.row1 = row1,
-    this.row2 = row2,
-    this.row3 = row3,
-    this.row4 = row4,
-    this.row5 = row5,
-    this.row6 = row6,
-    this.row7 = row7,
-    this.row8 = row8,
-    this.row9 = row9,
-    this.row10 = row10
+class Column {
+    constructor(data, next = null) {
+        (this.data = data), (this.next = next);
     }
+    }
+
+class RowLinkedList {
+    constructor() {
+        this.head = null;
+    }
+    insertFirst(data) {
+        const newHead = new Row(data, this.head);
+        this.head = newHead;
+    }
+    size() {
+        let counter = 0;
+        let currentRow = this.head;
+        while (currentRow) {
+        counter++;
+        currentRow = currentRow.next;
+        }
+        return counter;
+    }
+    getFirst() {
+        return this.head;
+    }
+    getFirstData() {
+        let row = this.getFirst();
+        return row.data;
+    }
+    getAt(idx) {
+        let counter = 0;
+        let currentRow = this.head;
+        while (currentRow) {
+        if (counter === idx) {
+            return currentRow;
+        }
+        counter++;
+        currentRow = currentRow.next;
+        }
+        return null;
+    }
+    getData(idx) {
+        let row = this.getAt(idx);
+        return row.data;
+    }
+    getLast() {
+        let counter = 0;
+        let currentRow = this.head;
+        while (currentRow.next != null) {
+        counter++;
+        currentRow = currentRow.next;
+        }
+        return currentRow;
+    }
+    getLastData() {
+        let row = this.getLast();
+        return row.data;
+    }
+    removeAt(idx) {
+        //removes the Row at the index specified (if 9 is input, Row at 9 will be removed.)
+        if (!this.head) {
+        return;
+        }
+        if (idx === 0) {
+        this.head = this.head.next;
+        return;
+        }
+        let counter = 0;
+        let currentRow = this.head;
+
+        while (currentRow) {
+        if (counter === idx - 1) {
+            currentRow.next = null;
+        }
+        counter++;
+        currentRow = currentRow.next;
+        }
+        return null;
+    }
+    insertLast(data) {
+        let last = this.getLast();
+        last.next = new Row(data);
+        return this.getLast();
+    }
+    removeLast() {
+        let newLast = getAt(this.size - 1)
+        console.log(newLast);
+
+        lnewLast.next = null;
+        return this.getLast();
+    }
+    clear() {}
+}
+
+class ColumnLinkedList {
+    constructor() {
+        this.head = null;
+    }
+    insertFirst(data) {
+        const newHead = new Column(data, this.head);
+        this.head = newHead;
+    }
+    size() {
+        let counter = 0;
+        let currentColumn = this.head;
+        while (currentColumn) {
+        counter++;
+        currentColumn = currentColumn.next;
+        }
+        return counter;
+    }
+    getFirst() {
+        return this.head;
+    }
+    getFirstData() {
+        let column = this.getFirst();
+        return column.data;
+    }
+    getAt(idx) {
+        let counter = 0;
+        let currentColumn = this.head;
+        while (currentColumn) {
+        if (counter === idx) {
+            return currentColumn;
+        }
+        counter++;
+        currentColumn = currentColumn.next;
+        }
+        return null;
+    }
+    getData(idx) {
+        let column = this.getAt(idx);
+        return column.data;
+    }
+    getLast() {
+        let counter = 0;
+        let currentColumn = this.head;
+        while (currentColumn.next != null) {
+        counter++;
+        currentColumn = currentColumn.next;
+        }
+        return currentColumn;
+    }
+    getLastData() {
+        let column = this.getLast();
+        return column.data;
+    }
+    removeAt(idx) {
+        //removes the Column at the index specified (if 9 is input, Column at 9 will be removed.)
+        if (!this.head) {
+        return;
+        }
+        if (idx === 0) {
+        this.head = this.head.next;
+        return;
+        }
+        let counter = 0;
+        let currentColumn = this.head;
+
+        while (currentColumn) {
+        if (counter === idx - 1) {
+            currentColumn.next = null;
+        }
+        counter++;
+        currentColumn = currentColumn.next;
+        }
+        return null;
+    }
+    leap(idx) {
+        let column = this.getAt(idx);
+        column.data = -1; 
+        return
+    }
+    replaceColor(idx) {
+        let column = this.getAt(idx);
+        column.data = frogger.previousColor;
+        return
+    }
+    insertLast(data) {
+        let last = this.getLast();
+        last.next = new Column(data);
+        return this.getLast();
+    }
+    removeLast() {
+        let newLast = this.getAt(this.size - 1)
+        console.log(newLast);
+
+        newlast.next = null;
+        return this.getLast();
+    }
+    clear() {}
+}
+
+let boardInterval;
+let carSplatCol;
+
+const board = new RowLinkedList()
+const rowType = new RowLinkedList()
+const direction = new RowLinkedList()
+
+let row1
+let row2
+let row3
+let row4
+let row5
+let row6
+let row7
+let row8
+let row9
+let row10
+let row11
+let eastWest = -1
+let highScore = 0
+let frogHop;
+let intervalSpeed = 1000;
+let frogger = {
+    number: -1,
+    life: 1,
+    column: 6,
+    previousColor: 3,
+    hopBack: 0,
+    rows: 0,
+    score: 0,
+    /* Hopping functions as methods */
+    hopForward() {
+        let nextRow = board.getData(8)
+        let currentRow = board.getData(9)
+        this.hopBack === 0 ? this.score++ : this.hopBack--
+        nextRow.getData(this.column - 1) === 0 ? gameOver() : this.life = 1
+        //Check if frogger is jumping into a space occupied by a car
+        if (nextRow.getData(this.column - 1) === 4 || nextRow.getData(this.column - 1) === 5 || nextRow.getData(this.column - 1) === 6 || nextRow.getData(this.column - 1) === 7 || nextRow.getData(this.column - 1) === 8 || nextRow.getData(this.column - 1) === 9 || nextRow.getData(this.column - 1) === 10) {
+            gameOver()
+        }
+        currentRow.replaceColor(this.column -1)
+        console.log(`column = ${this.column}`)
+        console.log(`leap = ${nextRow.getAt(this.column)}`)
+        this.previousColor = nextRow.getData(this.column - 1)
+        // this.previousColorLeft = null
+        // this.previousColorRight = nextRow.getData(this.column)
+        nextRow.leap(this.column - 1)
+
+        scrollDown()
+        updateHighScore()
+        hop.play()
+        renderBoard()
+    },
+    hopLeft() {
+        let currentRow = board.getData(9)
+        currentRow.getData(this.column - 2) === 0 ? gameOver() : this.life = 1
+        //Check if frogger is jumping into a space occupied by a car
+        if (currentRow.getData(this.column - 1) === 4 || currentRow.getData(this.column - 1) === 5 || currentRow.getData(this.column - 1) === 6 || currentRow.getData(this.column - 1) === 7 || currentRow.getData(this.column - 1) === 8 || currentRow.getData(this.column - 1) === 9 || currentRow.getData(this.column - 1) === 10) {
+            gameOver()
+        }
+        currentRow.replaceColor(this.column - 1)
+        this.column = this.column - 1
+        this.previousColor = currentRow.getData(this.column - 1)
+        // this.previousColorLeft = currentRow.getData(this.column)
+        // this.previousColorRight = currentRow.getData(this.column + 1)
+        currentRow.leap(this.column - 1)
+
+        hop.play()
+    renderBoard()
+    },
+    hopRight() {
+        let currentRow = board.getData(9)
+        currentRow.getData(this.column) === 0 ? gameOver() : this.life = 1
+        // Check if frogger is jumping into a space occupied by a car
+        if (currentRow.getData(this.column - 1) === 4 || currentRow.getData(this.column - 1) === 5 || currentRow.getData(this.column - 1) === 6 || currentRow.getData(this.column - 1) === 7 || currentRow.getData(this.column - 1) === 8 || currentRow.getData(this.column - 1) === 9 || currentRow.getData(this.column - 1) === 10) {
+            gameOver()
+        }
+
+        currentRow.replaceColor(this.column - 1)
+        this.column = this.column + 1
+        this.previousColor = currentRow.getData(this.column - 2)
+        // this.previousColorLeft = null
+        // this.previousColorRight = currentRow.getData(this.column - 1)
+        currentRow.leap(this.column - 1)
+
+        hop.play()
+        renderBoard()
+    },
+    hopBackward() {
+        let currentRow = board.getData(9)
+        let previousRow = board.getData(10)
+        previousRow.getData(this.column - 1) === 0 ? gameOver() : this.life = 1
+        // Check if frogger is jumping into a space occupied by a car
+        if (previousRow.getData(this.column - 1) === 4 || previousRow.getData(this.column - 1) === 5 || previousRow.getData(this.column - 1) === 6 || previousRow.getData(this.column - 1) === 7 || previousRow.getData(this.column - 1) === 8 || previousRow.getData(this.column - 1) === 9 || previousRow.getData(this.column - 1) === 10) {
+            gameOver()
+        }
+        if (frogger.rows === 0) {
+            alert('Uh Oh! frogger needs to move forward!')
+        } else {
+
+            currentRow.replaceColor(this.column - 1)
+            this.previousColor = previousRow.getData(this.column - 1)
+            // this.previousColorLeft = null
+            // this.previousColorRight = previousRow.getData(this.column)
+            previousRow.leap(this.column - 1)
+
+            this.hopBack++
+
+            scrollUp()
+            hop.play()
+            renderBoard()
+        }
+    },
+    reset() {
+        this.column = 6
+        this.life = -1
+        this.score = 0
+        this.hopBack = 0
+        this.rows = 0
+    }
+}
+
+function updateHighScore() {
+    frogger.score > highScore ? highScore++ : highScore = highScore
+}
+
+function boardReset() {
+    carSplatCol = null, 
+    board.clear()
+    
 }
 
 /*----- cached elements  -----*/
-const modal = document.querySelector('.modal')
-const startModal = document.querySelector('#startGameModal')
-const easyBtn = document.querySelector('#easyButton')
-const mediumBtn = document.querySelector('#mediumButton')
-const hardBtn = document.querySelector('#hardButton')
-const legendaryBtn = document.querySelector('#legendaryButton')
-const playBtn = document.querySelector('#playButton')
-const tryAgainBtn = document.querySelector('#tryAgainButton')
-const gameOverModal = document.querySelector('#gameOverModal')
-const nextLevelBtn = document.querySelector('#nextLevelButton')
-const winnerModal = document.querySelector('#winnerModal')
-const playAgainBtn = document.querySelector('#playAgainButton')
-const nextLevelModal = document.querySelector('#nextLevelModal')
-const playNxtBtn = document.querySelector('#playNextLevelButton')
-const schoolZnBtn = document.querySelector('#schoolZone')
-const highwayBtn = document.querySelector('#highway')
-const interstateBtn = document.querySelector('#interstate')
-const autobahnBtn = document.querySelector('#autobahn')
-const replayModal = document.querySelector('#replayModal')
-const level1Btn = document.querySelector('#level1')
-const level2Btn = document.querySelector('#level2')
+const modal = document.querySelector(".modal");
+const startModal = document.querySelector("#startGameModal");
+const easyBtn = document.querySelector("#easyButton");
+const mediumBtn = document.querySelector("#mediumButton");
+const hardBtn = document.querySelector("#hardButton");
+const legendaryBtn = document.querySelector("#legendaryButton");
+const playBtn = document.querySelector("#playButton");
+const tryAgainBtn = document.querySelector("#tryAgainButton");
+const gameOverModal = document.querySelector("#gameOverModal");
+const upButton = document.querySelector("#top");
+const downButton = document.querySelector("#bottom");
+const leftButton = document.querySelector("#left");
+const rightButton = document.querySelector("#right");
+const gamePad = document.querySelector(".gameButtons");
 
-const boardHTML = document.querySelector('#gameboard')
+const boardHTML = document.querySelector("#gameboard");
 
-//audio files
-const intro = document.querySelector('#intro')
-const hop = document.querySelector('#hop')
-const plunk = document.querySelector('#plunk')
-const theme = document.querySelector('#theme')
+/*----- audio files -----*/
+const intro = document.querySelector("#intro");
+const hop = document.querySelector("#hop");
+const plunk = document.querySelector("#plunk");
+const theme = document.querySelector("#theme");
 
 /*----- event listeners -----*/
-addEventListener('keydown', (event) => {
-    if (event.code == 'ArrowUp' || event.code == 'KeyW') {
-        hopForward()
-    } else if (event.code == 'ArrowDown' || event.code == 'KeyS') {
-        hopBackward()
-    } else if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
-        hopLeft()
-    } else if (event.code == 'ArrowRight' || event.code == 'KeyD') {
-        hopRight()
+addEventListener("keydown", (event) => {
+    if (event.code == "ArrowUp" || event.code == "KeyW") {
+        frogger.hopForward();
+    } else if (event.code == "ArrowDown" || event.code == "KeyS") {
+        frogger.hopBackward();
+    } else if (event.code == "ArrowLeft" || event.code == "KeyA") {
+        frogger.hopLeft();
+    } else if (event.code == "ArrowRight" || event.code == "KeyD") {
+        frogger.hopRight();
     }
-})
+});
 
-easyBtn.addEventListener('click', (e) => {
-    easyBtn.classList.add('speed')
-    mediumBtn.classList.remove('speed')
-    hardBtn.classList.remove('speed')
-    legendaryBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 1500
-    console.log(intervalSpeed)
-})
+upButton.addEventListener("click", (e) => {
+    frogger.hopForward();
+});
+downButton.addEventListener("click", (e) => {
+    frogger.hopBackward();
+});
+leftButton.addEventListener("click", (e) => {
+    frogger.hopLeft();
+});
+rightButton.addEventListener("click", (e) => {
+    frogger.hopRight();
+});
 
-mediumBtn.addEventListener('click', (e) => {
-    mediumBtn.classList.add('speed')
-    easyBtn.classList.remove('speed')
-    hardBtn.classList.remove('speed')
-    legendaryBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 900
-    console.log(intervalSpeed)
-})
+easyBtn.addEventListener("click", (e) => {
+    easyBtn.classList.add("speed");
+    mediumBtn.classList.remove("speed");
+    hardBtn.classList.remove("speed");
+    legendaryBtn.classList.remove("speed");
+    intervalSpeed = 1500;
+});
 
-hardBtn.addEventListener('click', (e) => {
-    hardBtn.classList.add('speed')
-    easyBtn.classList.remove('speed')
-    mediumBtn.classList.remove('speed')
-    legendaryBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 650
-    console.log(intervalSpeed)
-})
+mediumBtn.addEventListener("click", (e) => {
+    mediumBtn.classList.add("speed");
+    easyBtn.classList.remove("speed");
+    hardBtn.classList.remove("speed");
+    legendaryBtn.classList.remove("speed");
+    intervalSpeed = 900;
+});
 
-legendaryBtn.addEventListener('click', (e) => {
-    legendaryBtn.classList.add('speed')
-    easyBtn.classList.remove('speed')
-    mediumBtn.classList.remove('speed')
-    hardBtn.classList.remove('speed')
-    console.log(intervalSpeed)
-    intervalSpeed = 300
-    console.log(intervalSpeed)
-})
+hardBtn.addEventListener("click", (e) => {
+    hardBtn.classList.add("speed");
+    easyBtn.classList.remove("speed");
+    mediumBtn.classList.remove("speed");
+    legendaryBtn.classList.remove("speed");
+    intervalSpeed = 650;
+});
 
-playBtn.addEventListener('click', (e) => {
-    intro.pause()
-    startModal.classList.add('close')
-    modal.classList.add('close')
-    init() 
-})
+legendaryBtn.addEventListener("click", (e) => {
+    legendaryBtn.classList.add("speed");
+    easyBtn.classList.remove("speed");
+    mediumBtn.classList.remove("speed");
+    hardBtn.classList.remove("speed");
+    intervalSpeed = 300;
+});
 
-playAgainBtn.addEventListener('click', (e) => {
-    winnerModal.classList.remove('open')
-    startModal.classList.remove('close')
-    intro.play()
-})
+playBtn.addEventListener("click", (e) => {
+    intro.pause();
+    startModal.classList.add("close");
+    modal.classList.add("close");
+    gamePad.classList.add("open");
+    init();
+});
 
-tryAgainBtn.addEventListener('click', (e) => {
-    gameOverModal.classList.remove('open')
-    modal.classList.add('close')
-    init() 
-})
+tryAgainBtn.addEventListener("click", (e) => {
+    gameOverModal.classList.remove("open");
+    modal.classList.add("close");
+    gamePad.classList.add("open");
+    init();
+});
 
-nextLevelBtn.addEventListener('click', (e) => {
-    winnerModal.classList.remove('open')
-    nextLevelModal.classList.add('open')
-    level = 2   
-})
-
-playNxtBtn.addEventListener('click', (e) => {
-    intro.pause()
-    nextLevelModal.classList.remove('open')
-    modal.classList.add('close')
-    init() 
-})
-
-schoolZnBtn.addEventListener('click', (e) => {
-    schoolZnBtn.classList.add('speed')
-    highwayBtn.classList.remove('speed')
-    interstateBtn.classList.remove('speed')
-    autobahnBtn.classList.remove('speed')
-    intervalSpeed = 1500
-})
-
-highwayBtn.addEventListener('click', (e) => {
-    highwayBtn.classList.add('speed')
-    schoolZnBtn.classList.remove('speed')
-    interstateBtn.classList.remove('speed')
-    autobahnBtn.classList.remove('speed')
-    intervalSpeed = 900
-})
-
-interstateBtn.addEventListener('click', (e) => {
-    interstateBtn.classList.add('speed')
-    schoolZnBtn.classList.remove('speed')
-    highwayBtn.classList.remove('speed')
-    autobahnBtn.classList.remove('speed')
-    intervalSpeed = 650
-})
-
-autobahnBtn.addEventListener('click', (e) => {
-    autobahnBtn.classList.add('speed')
-    schoolZnBtn.classList.remove('speed')
-    highwayBtn.classList.remove('speed')
-    interstateBtn.classList.remove('speed')
-    intervalSpeed = 300
-})
-
-level1Btn.addEventListener('click', (e) => {
-    replayModal.classList.remove('open')
-    level = 1
-    startModal.classList.remove('close')
-})
-
-level2Btn.addEventListener('click', (e) => {
-    replayModal.classList.remove('open')
-    level = 2
-    nextLevelModal.classList.add('open')
-})
-
-/*----- functions -----*/ 
+/*----- functions -----*/
 
 /* board functions */
 function init() {
-    boardHTML.classList.add('open')
-    froggerReset()
-    if (level === 1) {
-        board = [
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 11, idx 0, ground5
-        [1, 0, 0, 0, 1, 0, 0, 0, 1, 0], //row 10, idx 1, river-6
-        [0, 0, 1, 1, 0, 0, 1, 1, 0, 0], //row 9, idx 2, river-5
-        [0, 1, 0, 0, 1, 0, 0, 1, 0, 0], //row 8, idx 3, river-4
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 7, idx 4, ground4
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 6, idx 5, ground3
-        [1, 0, 0, 1, 0, 0, 1, 0, 0, 1], //row 5, idx 6, river-3
-        [0, 1, 0, 0, 0, 1, 0, 0, 0, 1], //row 4, idx 7, river-2
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 3, idx 8, ground2
-        [1, 1, 0, 1, 1, 0, 1, 1, 0, 1], //row 2, idx 9, river-1
-        [3, 3, 3, 3, 3, -1, 3, 3, 3, 3] //row 1, idx 10, ground1 & Frogger
-        ]
-    } else if (level === 2) {
-        board = [
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3], //row 11, idx 0
-        [1, 4, 1, 5, 1, 6, 1, 7, 1, 8], //row 10, idx 1
-        [9, 1, 1, 1, 1, 10, 1, 1, 4, 1], //row 9, idx 2
-        [5, 1, 6, 7, 1, 8, 9, 1, 10, 4], //row 8, idx 3
-        [5, 1, 1, 1, 1, 6, 1, 1, 1, 7], //row 7, idx 4
-        [1, 1, 1, 8, 1, 1, 1, 1, 9, 1], //row 6, idx 5
-        [1, 1, 10, 1, 1, 1, 1, 4, 1, 1], //row 5, idx 6
-        [5, 1, 1, 1, 6, 1, 1, 7, 1, 1], //row 4, idx 7
-        [1, 1, 1, 8, 1, 1, 9, 1, 10, 1], //row 3, idx 8
-        [1, 1, 4, 1, 1, 5, 1, 1, 6, 1], //row 2, idx 9
-        [3, 3, 3, 3, 3, -1, 3, 3, 3, 3] //row 1, idx 10, Frogger
-        ]
-    }
-    setRows()
-    frogHop = gameboard.row10
-    render()    
+    boardHTML.classList.add("open");
+    frogger.reset();
+    boardReset();
+    generateBoard()
+    console.log(board);
+    render();
 }
 
-function setRows() {
-gameboard = new Board(board[0], board[1], board[2], board[3], board[4], board[5], board[6], board[7], board[8], board[9], board[10])
+function generateBoard() {
+    row11 = new ColumnLinkedList()
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    row11.insertFirst(3)
+    board.insertFirst(row11)
+    direction.insertFirst(0)
+    rowType.insertFirst('ground')
+    row10 = new ColumnLinkedList()
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    row10.insertFirst(-1)
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    row10.insertFirst(3)
+    board.insertFirst(row10)
+    direction.insertFirst(0)
+    rowType.insertFirst('ground')
+    generateRow()
+    generateRow()
+    generateRow()
+    generateRow()
+    generateRow()
+    generateRow()
+    generateRow()
+    generateRow()
+    generateRow()
+    row1 = board.getData(0) //idx 0
+    row2 = board.getData(1) //idx 1
+    row3 = board.getData(2) //idx 2
+    row4 = board.getData(3) //idx 3
+    row5 = board.getData(4) //idx 4
+    row6 = board.getData(5) //idx 5
+    row7 = board.getData(6) //idx 6
+    row8 = board.getData(7) //idx 7
+    row9 = board.getData(8) //idx 8
+    row10 = board.getData(9) //idx 9
+    row11 = board.getData(10) //idx 10
+}
+
+function generateRow() {
+    let rowTypeNum = Math.floor(Math.random() * 7) + 1
+    let row = new ColumnLinkedList()
+    if (rowTypeNum === 1) {
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        row.insertFirst(3)
+        direction.insertFirst(0)
+        rowType.insertFirst('ground')
+    } else if (rowTypeNum === 2 || rowTypeNum === 3 || rowTypeNum === 4) {
+        pattern = Math.floor(Math.random() * 7) + 1
+        if (pattern === 1) {
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+        } else if (pattern === 2) {
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(1)
+        } else if (pattern === 3) {
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+        } else if (pattern === 4) {
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+        } else if (pattern === 5) {
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+        } else if (pattern === 6) {
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+        } else if (pattern === 7) {
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(1)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+            row.insertFirst(0)
+        }
+        rowType.insertFirst('river')
+        direction.insertFirst(eastWest)
+        eastWest *= -1
+    } else if (rowTypeNum === 5 || rowTypeNum === 6 || rowTypeNum === 7) {
+        pattern = Math.floor(Math.random() * 3) + 1
+        console.log("pattern" + pattern)
+        if (pattern === 1) {
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(9)
+            row.insertFirst(1)
+            row.insertFirst(6)
+            row.insertFirst(1)
+            row.insertFirst(4)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(1)
+        } else if (pattern === 2) {
+            row.insertFirst(4)
+            row.insertFirst(10)
+            row.insertFirst(9)
+            row.insertFirst(1)
+            row.insertFirst(7)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(8)
+            row.insertFirst(1)
+            row.insertFirst(1)
+        } else if (pattern === 3) {
+            row.insertFirst(10)
+            row.insertFirst(1)
+            row.insertFirst(5)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(8)
+            row.insertFirst(6)
+            row.insertFirst(1)
+            row.insertFirst(1)
+            row.insertFirst(5)
+        }
+        rowType.insertFirst('road')
+        direction.insertFirst(eastWest)
+        eastWest *= -1
+    }
+    board.insertFirst(row)
 }
 
 function render() {
-    renderBoard()
     if (intervalSpeed === null) {
-        intervalSpeed = 1000
+        intervalSpeed = 1000;
     }
-
-    if (level === 1) {
-        riverInterval = setInterval(riverFlow, intervalSpeed) 
-    } else if (level === 2) {  
-        trafficInterval = setInterval(traffic, intervalSpeed)
-    }
-    theme.play()
+    renderBoard();
+    boardInterval = setInterval(riverFlow, intervalSpeed);
+    theme.play();
 }
 
-function renderBoard() {
-    for (let i = 0; i < board.length; i++) {
-        innerArr = board[i]
+function scrollDown() {
+    if (frogger.hopBack > 0) {
+        board.insertFirst(board.getLastData())
+        board.removeAt(board.size - 1)
+        direction.insertFirst(direction.getLastData())
+        direction.removeAt(board.size - 1)
+        rowType.insertFirst(rowType.getLastData())
+        rowType.removeAt(board.size - 1)
+        // frogger.hopBack-- see frogger.hopForward()
+    } else {
         generateRow()
-        function generateRow() {
-            for (let i = 0; i < innerArr.length; i++) {
-                const cellEl = document.getElementById("c" + i + "r" +board.indexOf(innerArr))
-                cellEl.style.backgroundColor = colors[innerArr[i]]
+    }
+    frogger.rows++
+}
+
+function scrollUp() {
+  // frogger.hopBack++ See frogger.hopBackward()
+    board.insertLast(board.getData(0))
+    board.removeAt(0)
+    direction.insertLast(direction.getData(0))
+    direction.removeAt(0)
+    rowType.insertLast(direction.getData(0))
+    rowType.removeAt(0)
+    frogger.rows--
+}
+
+
+function renderBoard() {
+    for (let j = 0; j < 11; j++) {
+        generateRows(j)
+        function generateRows(boardNum) {
+            for (let i = 0; i < 10; i++) {
+                let row = board.getData(boardNum)
+                const cellEl = document.getElementById("c" + i + "r" + boardNum)
+                cellEl.style.backgroundColor = colors[row.getData(i)]
             }
         }
     }
+    console.log(board)
+    document.querySelector("#score").innerHTML = `SCORE: ${frogger.score}   /`
+    document.querySelector("#highscore").innerHTML = `/  HIGHSCORE: ${highScore}`
 }
 
-/* riverInterval */
-function riverFlow() {
-    checkScore()
-        if (gameboard.row1[6] === 1 || gameboard.row1[6] === -1) {
-            gameboard.row1.push(1)
-        } else {
-            gameboard.row1.push(0)
-        }
-        gameboard.row1.shift()
 
-        if (gameboard.row2[3] === 1 || gameboard.row2[3] === -1) {
-            gameboard.row2.unshift(1)
-        } else {
-            gameboard.row2.unshift(0)
-        }
-        gameboard.row2.pop()
-
-        if (gameboard.row3[7] === 1 || gameboard.row3[7] === -1){
-            gameboard.row3.push(1)
-        } else {
-            gameboard.row3.push(0)
-        }
-        gameboard.row3.shift()
-
-        if (gameboard.row6[3] === 1 || gameboard.row6[3] === -1) {
-            gameboard.row6.unshift(1)
-        } else {
-            gameboard.row6.unshift(0)
-        }
-        gameboard.row6.pop()
-
-        if (gameboard.row7[6] === 1 || gameboard.row7[6] === -1) {
-            gameboard.row7.push(1)
-        } else {
-            gameboard.row7.push(0)
-        }
-        gameboard.row7.shift()
-
-        if (gameboard.row9[2] === 1 || gameboard.row9[2] === -1) {
-            gameboard.row9.unshift(1)
-        } else {
-            gameboard.row9.unshift(0)
-        }
-        gameboard.row9.pop()
-    froggerLogger()
-    renderBoard()
-}
-
-function froggerLogger() {
-    if (frogger.row === 1 || frogger.row === 3 || frogger.row === 7) {
-        frogger.column--
-    } else if (frogger.row === 2 || frogger.row === 6 || frogger.row === 9) {
-        frogger.column++
-    }
-}
-
-/* trafficInterval */
-function traffic() {
+/* Interval */
+function riverFlow() {  //write functionality to handle Frogger getting pushed off the board.
     let right = frogger.column
     let left = frogger.column - 2
-    carSplat()
-    checkScore()
-    if (frogger.row === 1 || frogger.row === 3 || frogger.row === 5 || frogger.row === 7 || frogger.row === 9) {
-        carSplatCol = frogHop[right]
-        carSplatRow = frogger.row 
-    } else if (frogger.row === 2 || frogger.row === 4 || frogger.row === 6 || frogger.row === 8) {
-        carSplatCol = frogHop[left]
-        carSplatRow = frogger.row
-    }
-    entranceRamp(gameboard.row1)
-    exitRamp(gameboard.row2)
-    entranceRamp(gameboard.row3)
-    exitRamp(gameboard.row4)
-    entranceRamp(gameboard.row5)
-    exitRamp(gameboard.row6)
-    entranceRamp(gameboard.row7)
-    exitRamp(gameboard.row8)
-    entranceRamp(gameboard.row9)
-    stationaryFrogger()
-    renderBoard()
-}
-
-function carSplat() {
-    if (frogger.row === carSplatRow && carSplatCol === 4 || carSplatCol === 5 || carSplatCol === 6 || carSplatCol === 7 || carSplatCol === 8 || carSplatCol === 9 || carSplatCol === 10) {
-        gameOver()
-        carSplatRow = null
-        carSplatCol = null
+    let currentRow = board.getData(9)
+    for (let i = 0; i < 11; i++) {
+        console.log(direction.getData(i))
+        let row = board.getData(i)
+        console.log(`${i} at ${row.size()}`)
+    switch (rowType.getData(i)) {
+        case 'river':
+            let row = board.getData(i)
+            let column = row.getAt(frogger.column - 1)
+            direction.getData(i) === 1 ? (row.insertFirst(row.getData(9)) && row.removeAt(10)) : (row.insertLast(row.getFirstData()) && row.removeAt(0))
+            froggerLogger(i) 
+            break
+        case 'road':
+            direction.getData(i) === 1 ? exitRamp(i) :  entranceRamp(i)
+            carSplat(i)
+            break
+        default:
+            console.log(`row${i} is ${rowType.getData(i)}`)
         }
+    }
+    renderBoard()
 }
 
-function stationaryFrogger() {
-    let right = frogger.column
-    let left = frogger.column - 2       //possibly could turn these if else if statements dryer by using a for loop...
-    let center = frogger.column - 1 
-    if (frogger.row === 9) {
-        frogger.previousColorRight = gameboard.row9[right]
-        gameboard.row9.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row9.splice(center, 1, -1) //middle
-        gameboard.row9.splice(left, 1, 1) //left        
-    } else if (gameboard.row8.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row8[left]
-        gameboard.row8.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row8.splice(center, 1, -1) //middle
-        gameboard.row8.splice(right, 1, 1) //left  
-    } else if (gameboard.row7.includes(-1)) {
-        frogger.previousColorRight = gameboard.row7[right]
-        gameboard.row7.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row7.splice(center, 1, -1) //middle
-        gameboard.row7.splice(left, 1, 1) //left  
-    } else if (gameboard.row6.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row6[left]
-        gameboard.row6.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row6.splice(center, 1, -1) //middle
-        gameboard.row6.splice(right, 1, 1) //left  
-    } else if (gameboard.row5.includes(-1)) {
-        frogger.previousColorRight = gameboard.row5[right]
-        gameboard.row5.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row5.splice(center, 1, -1) //middle
-        gameboard.row5.splice(left, 1, 1) //left  
-    } else if (gameboard.row4.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row4[left]
-        gameboard.row4.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row4.splice(center, 1, -1) //middle
-        gameboard.row4.splice(right, 1, 1) //left  
-    } else if (gameboard.row3.includes(-1)) {
-        frogger.previousColorRight = gameboard.row3[right]
-        gameboard.row3.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row3.splice(center, 1, -1) //middle
-        gameboard.row3.splice(left, 1, 1) //left  
-    } else if (gameboard.row2.includes(-1)) {
-        frogger.previousColorLeft = gameboard.row2[left]
-        gameboard.row2.splice(left, 1, frogger.previousColorLeft) //right
-        gameboard.row2.splice(center, 1, -1) //middle
-        gameboard.row2.splice(right, 1, 1) //left  
-    } else if (gameboard.row1.includes(-1)) {
-        frogger.previousColorRight = gameboard.row1[right]
-        gameboard.row1.splice(right, 1, frogger.previousColorRight) //right
-        gameboard.row1.splice(center, 1, -1) //middle
-        gameboard.row1.splice(left, 1, 1) //left  
+function froggerLogger(number) {
+    (number === 9) ? (direction.getData(number) === 1 ? frogger.column++ : frogger.column--) : frogger.column
+}
+
+function carSplat(rowNum) {
+    if ((rowNum = 9 && carSplatCol === 4) ||
+    carSplatCol === 5 ||
+    carSplatCol === 6 ||
+    carSplatCol === 7 ||
+    carSplatCol === 8 ||
+    carSplatCol === 9 ||
+    carSplatCol === 10)
+    {
+        gameOver();
     }
 }
 
-const entranceRamp = (arr) => {
+function entranceRamp(rowNum){
+    console.log("entranceRamp")
+
+    let row = board.getData(rowNum)
     let car
     let diceRoll = Math.floor(Math.random() * 6) + 1
     if (diceRoll === 3 || diceRoll === 4) {
         car = Math.floor(Math.random() * 10) + 4
-        arr.push(car)
+        row.insertLast(car)
     } else {
-        arr.push(1)
+        car = 1 //objectively not a car number, but helpful for writing the ternary that handles carsplat column at edge case when Frogger is on the edge of the board
+        row.insertLast(car)
     } 
-        arr.shift()
+    if (rowNum === 9) {
+        frogger.column === 10 ? carSplatCol = car : carSplatCol = row.getData(frogger.column)
+        row.leap(frogger.column)
+        row.replaceColor(frogger.column - 1)
+    }
+    row.removeAt(0)
 }
 
-const exitRamp = (arr) => {
+function exitRamp(rowNum) {
+    console.log("exitRamp")
+    let row = board.getData(rowNum)
     let car
     let diceRoll = Math.floor(Math.random() * 6) + 1
     if (diceRoll === 3 || diceRoll === 4) {
         car = Math.floor(Math.random() * 10) + 4
-        arr.unshift(car)
+        row.insertFirst(car)
     } else {
-        arr.unshift(1)
+        car = 1 //objectively not a car number, but helpful for writing the ternary that handles carsplat column at edge case when Frogger is on the edge of the board
+        row.insertFirst(car)
     } 
-        arr.pop()
-}
-
-/* Hopping functions */
-function hopForward() {
-    //change frogger square color to preset value.
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.row = frogger.row -1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not. If frogger is 
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
-        gameOver()
+    if (rowNum === 9) {
+        frogger.column === 1 ? carSplatCol = car : carSplatCol = row.getData(frogger.column - 1)
+        row.leap(frogger.column - 1)
+        row.replaceColor(frogger.column)
     }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to//set log interval to keep track of the indexof the log frogger jumped on.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
+    row.removeAt(10)
 }
 
-function hopLeft() {
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.column = frogger.column - 1
-    //record the color of the square that frogger will jump to and see ifFrogger fell in the water or not!
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
-        gameOver()
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
-}
-
-function hopRight() {
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.column = frogger.column + 1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column -1] === 4 || frogHop[frogger.column -1] === 5 || frogHop[frogger.column -1] === 6 || frogHop[frogger.column -1] === 7 || frogHop[frogger.column -1] === 8 || frogHop[frogger.column -1] === 9 || frogHop[frogger.column -1] === 10) {
-        gameOver()    
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
-}
-
-function hopBackward() {
-    //change frogger square color to preset value
-    frogHop.splice(frogger.column -1, 1, frogger.previousColor)
-    frogger.row = frogger.row + 1
-    //record the color of the square that frogger will jump to and see if Frogger fell in the water or not!
-    frogHop = board[frogger.row]
-    if (frogHop[frogger.column - 1] === 4 || frogHop[frogger.column - 1] === 5 || frogHop[frogger.column - 1] === 6 || frogHop[frogger.column - 1] === 7 || frogHop[frogger.column - 1] === 8 || frogHop[frogger.column - 1] === 9 || frogHop[frogger.column - 1] === 10) {
-        gameOver()
-    }
-    frogger.previousColor = frogHop[frogger.column -1]
-    frogger.life = frogger.life * frogHop[frogger.column -1]
-    //change the color of the space frogger jumps to.
-    frogHop.splice(frogger.column -1, 1, frogger.number)
-    hop.play()
-    renderBoard()
-}
-
-/* scoring and reset functions */
-function froggerReset() {
-    frogger.row = 10
-    frogger.column = 6
-    frogger.previousColor = 3
-    frogger.previousColorLeft = null
-    frogger.previousColorRight = null
-    frogger.life = -1
-}
+/* scoring functions */
 
 const checkScore = () => {
-    if (frogger.life === 0 ) { 
-        gameOver()
-    } else if (gameboard.row0.includes(-1) === false && gameboard.row1.includes(-1) === false && gameboard.row2.includes(-1) === false && gameboard.row3.includes(-1) === false && gameboard.row4.includes(-1) === false && gameboard.row5.includes(-1) === false && gameboard.row6.includes(-1) === false && gameboard.row7.includes(-1) === false && gameboard.row8.includes(-1) === false && gameboard.row9.includes(-1) === false && gameboard.row10.includes(-1) === false) {
-        gameOver()
-    } else if (frogger.row === 0 || gameboard.row0.includes(-1)) {
-        winner()
+    if (frogger.life === 0) {
+        gameOver();
+    } else if (board[9].includes(-1) === false) {
+        gameOver();
     }
-}
-
-function winner() {
-    if (level === 1) {
-        clearInterval(riverInterval)
-        boardHTML.classList.remove('open')
-        modal.classList.remove('close')
-        winnerModal.classList.add('open')
-    } else if (level === 2) {
-        clearInterval(trafficInterval)
-        boardHTML.classList.remove('open')
-        replayModal.classList.add('open')
-        modal.classList.remove('close')
-    }
-    
-    theme.pause()
-}
+};
 
 function gameOver() {
-    if (level === 1) {
-        clearInterval(riverInterval)
-    } else if (level === 2 ) {
-        clearInterval(trafficInterval)
-    }
-    theme.pause()
-    plunk.play()
-    boardHTML.classList.remove('open')
-    modal.classList.remove('close')
-    gameOverModal.classList.add('open')
+    clearInterval(boardInterval);
+    boardReset();
+    frogger.reset();
+    theme.pause();
+    plunk.play();
+    boardHTML.classList.remove("open");
+    modal.classList.remove("close");
+    gameOverModal.classList.add("open");
+    gamePad.classList.remove("open");
 }
