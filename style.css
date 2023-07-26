@@ -51,6 +51,11 @@ Button:hover {
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
 }
 
+.score {
+    font-family: "Press Start 2P", sans-serif;
+    display:inline-flex;
+}
+
 .modal.close, #startGameModal.close {
     display: none;
 }
@@ -82,49 +87,43 @@ Button:hover {
 #gameOverModal.open {
     display: block
 }
+
 .gameButtons {
     display: none;
 }
 
-.gameButtons.open {
-    border-radius: 50%;
-    display: grid;
-    background-color: khaki;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+
+@media only screen and (max-width: 500px) {
+    .gameButtons.open {
+        border-radius: 50%;
+        display: grid;
+        background-color: khaki;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+    }
+    
+    #top { 
+        grid-area: 1 / 2 / 2 / 2;
+        border-radius: 75%;
+        background-color: lightgray;
+        font-size: larger;
+    } 
+    
+    #bottom {
+        grid-area: 3 / 2 / 3 / 2;
+        border-radius: 75%;
+        background-color: lightgray;
+    } 
+    
+    #left {
+        grid-area: 2 / 1 / 2 / 2;
+        border-radius: 75%;
+        background-color: lightgray;
+    } 
+    
+    #right {
+        grid-area: 2 / 3 / 2 / 4;
+        border-radius: 75%;
+        background-color: lightgray;
+    }
 }
-
-#top { 
-    grid-area: 1 / 2 / 2 / 2;
-    border-radius: 75%;
-    background-color: lightgray;
-    font-size: larger;
-} 
-
-#bottom {
-    grid-area: 3 / 2 / 3 / 2;
-    border-radius: 75%;
-    background-color: lightgray;
-} 
-
-#left {
-    grid-area: 2 / 1 / 2 / 2;
-    border-radius: 75%;
-    background-color: lightgray;
-} 
-
-#right {
-    grid-area: 2 / 3 / 2 / 4;
-    border-radius: 75%;
-    background-color: lightgray;
-}
-
-/* body, .score {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-} */
-
-/* media only screen and (min-width: 500px) {
-
-} */
