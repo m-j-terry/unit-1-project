@@ -8,10 +8,10 @@
 ### Level 1: "river"
 ![](Figure_2.png)
 
-### Level 1: "road"
+### Level 2: "road"
 ![](Figure_2.5.png)
 
-- For more on this project, you can refer to the README from Version 1 [here](https://github.com/m-j-terry/unit-1-project/tree/v1/READMEfiles)
+- For more on this project, you can refer to the [README](https://github.com/m-j-terry/unit-1-project/tree/v1/READMEfiles) from Version 1.
 
 - After updating this game to incorporate some of the icebox elements (Scrolling gameboard, allowing for scaleable gameplay; score tracker; mixed gameboard, i.e. rivers and roads; etc.), I found that the game was having trouble rendering the DOM at the rate of the game interval because the way I had structured my game using arrays was using to store previous arrays and other information for a scaleable gameboard (such as direction and rowType, and seperate arrays to store previous directions and rowtypes), was using too much RAM. In order to address the issue of space complexity caused by manipulating too many arrays simultaneously, I restructured the game to run off of linked lists, which are less space complex.
 
