@@ -1,16 +1,16 @@
 /*----- constants -----*/
 const colors = {
-3: "rgb(180,130,110)", //ground
-0: "rgb(100,149,237)", //water
-1: "gray", //lily-pads/logs
-"-1": "green", //frogger
-4: "yellow",
-5: "red",
-6: "orange",
-7: "purple",
-8: "navy",
-9: "brown",
-10: "white",
+3: "rgb(180,130,110)", // ground
+0: "rgb(100,149,237)", // water
+1: "gray", // lily-pads/logs
+"-1": "green", // frogger
+4: "yellow", // car
+5: "red", // car
+6: "orange", // car
+7: "purple", // car
+8: "navy", // car
+9: "brown", // car
+10: "white", // car
 };
 
 /*----- state variables -----*/
@@ -713,16 +713,11 @@ function renderBoard() {
 
 /* Interval */
 function riverFlow() {  
-    let left = frogger.column - 2
-    let currentRow = board.getData(9)
     for (let i = 0; i < 11; i++) {
-        console.log(direction.getData(i))
-        let row = board.getData(i)
-        console.log(`${i} at ${row.size()}`)
+        // Looks at each row of the board and then handles the movement according to the row's direction.
         switch (rowType.getData(i)) {
             case 'river': // handles frogger floating on river.
                 let row = board.getData(i)
-                let column = row.getAt(frogger.column - 1)
                 direction.getData(i) === 1 ? (row.insertFirst(row.getData(9)) && row.removeAt(10)) : (row.insertLast(row.getFirstData()) && row.removeAt(0))
                 froggerLogger(i) 
                 break
