@@ -116,6 +116,7 @@ class RowLinkedList {
     clear() {}
 }
 
+//counter-intuitively, ColumnLinkedList keeps track of each of the 'column' spaces on within a row. It is used to to create the x-axis of the gameboard and each of the nodes within a ColumnLinkedList represents an index on the row.
 class ColumnLinkedList {
     constructor() {
         this.head = null;
@@ -218,10 +219,12 @@ class ColumnLinkedList {
 let boardInterval;
 let carSplatCol;
 
+// board represents the physical board that the user sees. However, there are two other linked lists that track different properties of the board: 1) type(river, road, ground), this is important because each one has different properties for handling frogger's movement. 2) direction: this is crucial for the river sections: if you have two river sections going the same direction, the game would be impossible.
 const board = new RowLinkedList()
 const rowType = new RowLinkedList()
 const direction = new RowLinkedList()
 
+// the board consists of 11 rows; see generateBoard() to see how these board elements are created.
 let row1
 let row2
 let row3
@@ -238,27 +241,27 @@ let highScore = 0
 let frogHop;
 let intervalSpeed = 1000;
 let frogger = {
-    number: -1,
+    number: -1, // see colors object above.
     life: 1,
-    column: 6,
-    previousColor: 3,
-    hopBack: 0,
-    rows: 0,
+    column: 6, // keeps track of which y-axis column Frogger occupies.
+    previousColor: 3,// previousColor is used to replace the color of the square from which Frogger is jumping.
+    hopBack: 0, // hopBack keeps track of how many spaces frogger has hopped backward; this is to keep the score from going up when frogger jumps forward again; score only increases if hopBack = 0.
+    rows: 0, // used to keep track of how far from the start frogger has jumped; alerts that frogger cannot jump backward from the starting space.
     score: 0,
     /* Hopping functions as methods */
     hopForward() {
         let nextRow = board.getData(8)
         let currentRow = board.getData(9)
-        this.hopBack === 0 ? this.score++ : this.hopBack--
+        this.hopBack === 0 ? this.score++ : this.hopBack-- // either frogger's score goes up when hopping forward or the hopBack gets closer to 0 (where the score can start to increase again)
         nextRow.getData(this.column - 1) === 0 ? gameOver() : this.life = 1
         //Check if frogger is jumping into a space occupied by a car
         if (nextRow.getData(this.column - 1) === 4 || nextRow.getData(this.column - 1) === 5 || nextRow.getData(this.column - 1) === 6 || nextRow.getData(this.column - 1) === 7 || nextRow.getData(this.column - 1) === 8 || nextRow.getData(this.column - 1) === 9 || nextRow.getData(this.column - 1) === 10) {
             gameOver()
         }
-        currentRow.replaceColor(this.column -1)
+        currentRow.replaceColor(this.column -1) // replaceColor is a linkedList method.
         console.log(`column = ${this.column}`)
         console.log(`leap = ${nextRow.getAt(this.column)}`)
-        this.previousColor = nextRow.getData(this.column - 1)
+        this.previousColor = nextRow.getData(this.column - 1) //
         // this.previousColorLeft = null
         // this.previousColorRight = nextRow.getData(this.column)
         nextRow.leap(this.column - 1)
@@ -344,7 +347,6 @@ function updateHighScore() {
 function boardReset() {
     carSplatCol = null, 
     board.clear()
-    
 }
 
 /*----- cached elements  -----*/
@@ -510,6 +512,7 @@ function generateBoard() {
 function generateRow() {
     let rowTypeNum = Math.floor(Math.random() * 7) + 1
     let row = new ColumnLinkedList()
+    // 1/7 chance of new row being a 'ground' row.
     if (rowTypeNum === 1) {
         row.insertFirst(3)
         row.insertFirst(3)
@@ -523,8 +526,10 @@ function generateRow() {
         row.insertFirst(3)
         direction.insertFirst(0)
         rowType.insertFirst('ground')
+        // 3/7 chance of the row being a 'river' row
     } else if (rowTypeNum === 2 || rowTypeNum === 3 || rowTypeNum === 4) {
         pattern = Math.floor(Math.random() * 7) + 1
+        // 7 different river type patterns
         if (pattern === 1) {
             row.insertFirst(0)
             row.insertFirst(1)
@@ -606,9 +611,11 @@ function generateRow() {
         rowType.insertFirst('river')
         direction.insertFirst(eastWest)
         eastWest *= -1
+        // 3/7 chance of a row being a 'road'
     } else if (rowTypeNum === 5 || rowTypeNum === 6 || rowTypeNum === 7) {
         pattern = Math.floor(Math.random() * 3) + 1
         console.log("pattern" + pattern)
+        // three different road starting patterns
         if (pattern === 1) {
             row.insertFirst(1)
             row.insertFirst(1)
@@ -647,6 +654,7 @@ function generateRow() {
         direction.insertFirst(eastWest)
         eastWest *= -1
     }
+    // new row is inserted as the head of the board
     board.insertFirst(row)
 }
 
@@ -704,37 +712,38 @@ function renderBoard() {
 
 
 /* Interval */
-function riverFlow() {  //write functionality to handle Frogger getting pushed off the board.
-    let right = frogger.column
+function riverFlow() {  
     let left = frogger.column - 2
     let currentRow = board.getData(9)
     for (let i = 0; i < 11; i++) {
         console.log(direction.getData(i))
         let row = board.getData(i)
         console.log(`${i} at ${row.size()}`)
-    switch (rowType.getData(i)) {
-        case 'river':
-            let row = board.getData(i)
-            let column = row.getAt(frogger.column - 1)
-            direction.getData(i) === 1 ? (row.insertFirst(row.getData(9)) && row.removeAt(10)) : (row.insertLast(row.getFirstData()) && row.removeAt(0))
-            froggerLogger(i) 
-            break
-        case 'road':
-            direction.getData(i) === 1 ? exitRamp(i) :  entranceRamp(i)
-            carSplat(i)
-            break
-        default:
-            console.log(`row${i} is ${rowType.getData(i)}`)
+        switch (rowType.getData(i)) {
+            case 'river': // handles frogger floating on river.
+                let row = board.getData(i)
+                let column = row.getAt(frogger.column - 1)
+                direction.getData(i) === 1 ? (row.insertFirst(row.getData(9)) && row.removeAt(10)) : (row.insertLast(row.getFirstData()) && row.removeAt(0))
+                froggerLogger(i) 
+                break
+            case 'road': // simulates cars 'driving' and checking to see if frogger was 'hit' by a car
+                direction.getData(i) === 1 ? exitRamp(i) :  entranceRamp(i)
+                carSplat(i)
+                break
+            default:
+                console.log(`row${i} is ${rowType.getData(i)}`)
         }
     }
     renderBoard()
 }
 
 function froggerLogger(number) {
+    // handles frogger floating on river.
     (number === 9) ? (direction.getData(number) === 1 ? frogger.column++ : frogger.column--) : frogger.column
 }
 
 function carSplat(rowNum) {
+    //checking to see if frogger was 'hit' by a car
     if ((rowNum = 9 && carSplatCol === 4) ||
     carSplatCol === 5 ||
     carSplatCol === 6 ||
@@ -748,8 +757,7 @@ function carSplat(rowNum) {
 }
 
 function entranceRamp(rowNum){
-    console.log("entranceRamp")
-
+    // moves cars from right to left.
     let row = board.getData(rowNum)
     let car
     let diceRoll = Math.floor(Math.random() * 6) + 1
@@ -761,6 +769,7 @@ function entranceRamp(rowNum){
         row.insertLast(car)
     } 
     if (rowNum === 9) {
+        // if frogger is in the car row, leap() will simulate frogger-stasis as the cars move.
         frogger.column === 10 ? carSplatCol = car : carSplatCol = row.getData(frogger.column)
         row.leap(frogger.column)
         row.replaceColor(frogger.column - 1)
@@ -769,6 +778,7 @@ function entranceRamp(rowNum){
 }
 
 function exitRamp(rowNum) {
+    // moves cars from left to right
     console.log("exitRamp")
     let row = board.getData(rowNum)
     let car
@@ -781,6 +791,7 @@ function exitRamp(rowNum) {
         row.insertFirst(car)
     } 
     if (rowNum === 9) {
+        // if frogger is in the car row, leap() will simulate frogger-stasis as the cars move.
         frogger.column === 1 ? carSplatCol = car : carSplatCol = row.getData(frogger.column - 1)
         row.leap(frogger.column - 1)
         row.replaceColor(frogger.column)
