@@ -13,6 +13,8 @@ const colors = {
 10: "white", // car
 };
 
+
+
 /*----- state variables -----*/
 
 class Row {
@@ -217,6 +219,8 @@ class ColumnLinkedList {
 }
 
 let boardInterval;
+let difficulty = "easy";
+let highScores = []
 let carSplatCol;
 
 // board represents the physical board that the user sees. However, there are two other linked lists that track different properties of the board: 1) type(river, road, ground), this is important because each one has different properties for handling frogger's movement. 2) direction: this is crucial for the river sections: if you have two river sections going the same direction, the game would be impossible.
@@ -358,6 +362,8 @@ const hardBtn = document.querySelector("#hardButton");
 const legendaryBtn = document.querySelector("#legendaryButton");
 const playBtn = document.querySelector("#playButton");
 const tryAgainBtn = document.querySelector("#tryAgainButton");
+const addScoreModal = document.querySelector("#addScoreModal")
+const scoreForm = document.querySelector("#scoreForm")
 const gameOverModal = document.querySelector("#gameOverModal");
 const upButton = document.querySelector("#top");
 const downButton = document.querySelector("#bottom");
@@ -404,6 +410,7 @@ easyBtn.addEventListener("click", (e) => {
     mediumBtn.classList.remove("speed");
     hardBtn.classList.remove("speed");
     legendaryBtn.classList.remove("speed");
+    difficulty = "easy";
     intervalSpeed = 1500;
 });
 
@@ -412,6 +419,7 @@ mediumBtn.addEventListener("click", (e) => {
     easyBtn.classList.remove("speed");
     hardBtn.classList.remove("speed");
     legendaryBtn.classList.remove("speed");
+    difficulty = "medium";
     intervalSpeed = 900;
 });
 
@@ -420,6 +428,7 @@ hardBtn.addEventListener("click", (e) => {
     easyBtn.classList.remove("speed");
     mediumBtn.classList.remove("speed");
     legendaryBtn.classList.remove("speed");
+    difficulty = "hard";
     intervalSpeed = 650;
 });
 
@@ -428,6 +437,7 @@ legendaryBtn.addEventListener("click", (e) => {
     easyBtn.classList.remove("speed");
     mediumBtn.classList.remove("speed");
     hardBtn.classList.remove("speed");
+    difficulty = "legendary";
     intervalSpeed = 300;
 });
 
@@ -446,10 +456,51 @@ tryAgainBtn.addEventListener("click", (e) => {
     init();
 });
 
+scoreForm.addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    try {
+        const formData = new FormData(scoreForm)
+        const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
+            method: "POST",
+            body: formData
+        })
+        if (!response.ok) {
+            throw new Error("Failed to add score");
+        }
+        console.log("Score added successfully");
+        scoreForm.reset(); // Reset the form
+        // set the gameOverModal
+        addScoreModal.classList.remove("open")
+        gameOverModal.classList.add("open");
+    } catch (error) {
+        console.error("Error:", error);
+    }
+})
+
 /*----- functions -----*/
 
 /* board functions */
 function init() {
+    //set highscores
+    highScores = () => {
+        fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(res => {
+            const scores = res.body.scores;
+            console.log(scores);
+            return scores
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
     boardHTML.classList.add("open");
     frogger.reset();
     boardReset();
@@ -711,6 +762,7 @@ function renderBoard() {
 }
 
 
+
 /* Interval */
 function riverFlow() {  
     for (let i = 0; i < 11; i++) {
@@ -812,6 +864,39 @@ function gameOver() {
     plunk.play();
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
-    gameOverModal.classList.add("open");
+    document.querySelector("#highScores").innerHTML = highScores
+    if (highScore > highScores[highScores.length - 1]){
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
+        const day = today.getDate();
+        const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+
+        document.querySelector("#date").value = formattedDate
+        document.querySelector("#scoreSubmit").value = highScore
+        document.querySelector("#difficulty").value = difficulty
+        // Delete number 10 from highScores
+        if (highScores.length = 10 && highScore > highScores[highScores.length-1]){ 
+            function deleteOne(){
+                fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
+                    method: "DELETE"
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete resource');
+                    }
+                    console.log('Resource deleted successfully');
+                })
+                    .catch(error => {
+                        console.error('Error:', error);
+                });            
+            }
+            deleteOne()
+        }
+    } else if (highScore > highScores[highScores.length-1]) {
+        addScoreModal.classList.add("open")
+    } else {
+        gameOverModal.classList.add("open");
+    }
     gamePad.classList.remove("open");
 }

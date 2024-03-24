@@ -179,8 +179,27 @@
             <button id="playButton">Play</button>
         </div>
         <div id="gameOverModal">
+            <div class="highScores"></div>
             <p>Oh no! Frogger was too slow!</br>You'll have to be more careful next time!</p>
             <button id="tryAgainButton">Try Again</button>
+        </div>
+        <div id="addScoreModal">
+            <div class="highScores"></div>
+            <form id="scoreForm" action="/api/score" method="POST">
+                <label for="name">Name:</label>
+                <input type="text" name="name" maxLength="15" required>
+
+                <label for="score">Score:</label>
+                <input id="scoreSubmit" type="score" name="score" required>
+
+                <label for="difficulty">Difficulty:</label>
+                <input id="difficulty" type="difficulty" name="difficulty" required>
+
+                <label for="date">Date:</label>
+                <input id="date" type="date" name="date" required>
+
+                <input type="submit" value="Submit">
+            </form>
         </div>
     </section>
 </body>
