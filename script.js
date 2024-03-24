@@ -461,7 +461,7 @@ scoreForm.addEventListener("submit", async (e) => {
 
     try {
         const formData = new FormData(scoreForm)
-        const response = await fetch(`localhost:3000/${difficulty}`, {
+        const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
             method: "POST",
             body: formData
         })
@@ -485,7 +485,7 @@ function init() {
     //set highscores
     highScores = async () => {
         try {
-            const response = await fetch(`localhost:3000/${difficulty}`);
+            const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`);
             
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -886,7 +886,7 @@ function gameOver() {
         // Delete number 10 from highScores
         async function deleteOne() {
             try {
-                const response = await fetch(`localhost:3000/${difficulty}`, {
+                const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
                     method: "DELETE"
                 });
         
