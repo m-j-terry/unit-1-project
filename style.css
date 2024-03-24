@@ -80,11 +80,11 @@ Button:hover {
     position: relative;
 }
 
-#gameOverModal {
+#gameOverModal, #addScoreModal {
     display: none;
 }
 
-#gameOverModal.open {
+#gameOverModal.open, #addScoreModal.open {
     display: block
 }
 
@@ -92,6 +92,13 @@ Button:hover {
     display: none;
 }
 
+#scoreForm{
+    font-family: "Press Start 2P", sans-serif;
+}
+
+.highScores{
+    font-family: "Press Start 2P", sans-serif;
+}
 
 @media only screen and (max-width: 1400px) {
     .gameButtons.open {
