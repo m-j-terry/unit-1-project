@@ -31,10 +31,7 @@ Button {
 }
 
 Button:hover {
-    background-color: green;
-    color: white;
-    height: 38px;
-    width: 65px;
+    color: green;
     cursor: pointer;
     border-radius: 2px;
 }

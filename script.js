@@ -363,6 +363,7 @@ const legendaryBtn = document.querySelector("#legendaryButton");
 const playBtn = document.querySelector("#playButton");
 const tryAgainBtn = document.querySelector("#tryAgainButton");
 const addScoreModal = document.querySelector("#addScoreModal")
+const allTimeHighScores = document.querySelector(".highScores")
 const scoreForm = document.querySelector("#scoreForm")
 const gameOverModal = document.querySelector("#gameOverModal");
 const upButton = document.querySelector("#top");
@@ -864,14 +865,16 @@ function gameOver() {
     plunk.play();
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
-    document.querySelector("#highScores").innerHTML = highScores.map((score) => {
+    let scoreDisplays = highScores.map((score) => `
         <div class="scoreDisplay">
             <p>${score.name}</p>
             <p>${score.score}</p>
             <p>${score.difficulty}</p>
             <p>${score.date}</p>
         </div>
-    })
+    `)
+    const scoresHTML = scoreDisplays.join('')
+    allTimeHighScores.innerHTML = scoresHTML
     if (highScore > highScores[highScores.length - 1]){
         const today = new Date();
         const year = today.getFullYear();
