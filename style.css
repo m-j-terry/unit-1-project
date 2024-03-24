@@ -85,7 +85,7 @@ Button:hover {
 }
 
 #gameOverModal.open, #addScoreModal.open {
-    display: block
+    display: block;
 }
 
 .gameButtons {
