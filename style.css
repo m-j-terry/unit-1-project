@@ -45,7 +45,7 @@ Button:hover {
     border: 5px;
     border-color: green;
     border-style: double;
-    background-color: khaki;
+    background-color: rgb(255, 255, 35);
     padding: 1vmin;
     text-align: center;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
@@ -62,7 +62,7 @@ Button:hover {
 
 #easyButton, #mediumButton, #hardButton, #legendaryButton {
     width: auto;
-    background-color: khaki;
+    background-color: rgb(255, 255, 35);
     border-style: none;
 }
 
@@ -92,11 +92,13 @@ Button:hover {
     display: none;
 }
 
-#scoreForm{
+#scoreForm input {
     font-family: "Press Start 2P", sans-serif;
 }
 
-.highScores{
+.highScores .score {
+    display: flex; 
+    flex-direction: row;
     font-family: "Press Start 2P", sans-serif;
 }
 
@@ -104,7 +106,7 @@ Button:hover {
     .gameButtons.open {
         border-radius: 50%;
         display: grid;
-        background-color: khaki;
+        background-color: rgb(255, 255, 35);
         grid-template-columns: 1fr 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
     }

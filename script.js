@@ -461,7 +461,7 @@ scoreForm.addEventListener("submit", async (e) => {
 
     try {
         const formData = new FormData(scoreForm)
-        const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
+        const response = await fetch(`localhost:3000/${difficulty}`, {
             method: "POST",
             body: formData
         })
@@ -483,22 +483,22 @@ scoreForm.addEventListener("submit", async (e) => {
 /* board functions */
 function init() {
     //set highscores
-    highScores = () => {
-        fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`)
-        .then(response => {
+    highScores = async () => {
+        try {
+            const response = await fetch(`localhost:3000/${difficulty}`);
+            
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();
-        })
-        .then(res => {
+            
+            const res = await response.json();
             const scores = res.body.scores;
             console.log(scores);
-            return scores
-        })
-        .catch(error => {
+            return scores;
+        } catch (error) {
             console.error('Error:', error);
-        });
+            throw error; // Re-throw the error to propagate it to the caller
+        }
     }
 
     boardHTML.classList.add("open");
@@ -864,35 +864,43 @@ function gameOver() {
     plunk.play();
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
-    document.querySelector("#highScores").innerHTML = highScores
+    document.querySelector("#highScores").innerHTML = highScores.map((score) => {
+        <div class="scoreDisplay">
+            <p>${score.name}</p>
+            <p>${score.score}</p>
+            <p>${score.difficulty}</p>
+            <p>${score.date}</p>
+        </div>
+    })
     if (highScore > highScores[highScores.length - 1]){
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
         const day = today.getDate();
         const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+        addScoreModal.classList.add("open")
 
         document.querySelector("#date").value = formattedDate
         document.querySelector("#scoreSubmit").value = highScore
         document.querySelector("#difficulty").value = difficulty
         // Delete number 10 from highScores
-        if (highScores.length = 10 && highScore > highScores[highScores.length-1]){ 
-            function deleteOne(){
-                fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
+        async function deleteOne() {
+            try {
+                const response = await fetch(`localhost:3000/${difficulty}`, {
                     method: "DELETE"
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to delete resource');
-                    }
-                    console.log('Resource deleted successfully');
-                })
-                    .catch(error => {
-                        console.error('Error:', error);
-                });            
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Failed to delete resource');
+                }
+        
+                console.log('Resource deleted successfully');
+            } catch (error) {
+                console.error('Error:', error);
             }
-            deleteOne()
         }
+
+        deleteOne()
     } else if (highScore > highScores[highScores.length-1]) {
         addScoreModal.classList.add("open")
     } else {
