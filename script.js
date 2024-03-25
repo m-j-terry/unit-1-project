@@ -493,7 +493,7 @@ function init() {
             }
             
             const res = await response.json();
-            const scores = res.body.scores;
+            const scores = res.scores;
             console.log(scores);
             return scores;
         } catch (error) {
