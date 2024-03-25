@@ -263,8 +263,6 @@ let frogger = {
             gameOver()
         }
         currentRow.replaceColor(this.column -1) // replaceColor is a linkedList method.
-        console.log(`column = ${this.column}`)
-        console.log(`leap = ${nextRow.getAt(this.column)}`)
         this.previousColor = nextRow.getData(this.column - 1) //
         // this.previousColorLeft = null
         // this.previousColorRight = nextRow.getData(this.column)
@@ -491,11 +489,11 @@ function init() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            
-            const res = await response.json();
-            const scores = res;
-            console.log(scores);
-            return scores;
+            console.log(response)
+            // const res = await response.json();
+            // const scores = res;
+            // console.log(scores);
+            return response;
         } catch (error) {
             console.error('Error:', error);
             throw error; // Re-throw the error to propagate it to the caller
@@ -785,7 +783,6 @@ function riverFlow() {
                 carSplat(i)
                 break
             default:
-                console.log(`row${i} is ${rowType.getData(i)}`)
         }
     }
     renderBoard()
@@ -833,7 +830,6 @@ function entranceRamp(rowNum){
 
 function exitRamp(rowNum) {
     // moves cars from left to right
-    console.log("exitRamp")
     let row = board.getData(rowNum)
     let car
     let diceRoll = Math.floor(Math.random() * 6) + 1
