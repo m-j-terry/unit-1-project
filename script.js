@@ -489,22 +489,24 @@ function init() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            console.log(response)
-            return response;
+            return response.json();
         } catch (error) {
             console.error('Error:', error);
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
-    const highScoresPromise = setHighScores()
 
-    highScoresPromise.then(scores => {
-        highScores = scores
-    }).catch(error => {
-        console.log(error)
-    })
-
-    console.log(highScores)
+    async function fetchAndHandleHighScores() {
+        try {
+            const highScores = await setHighScores(); // Wait for the Promise to resolve
+            console.log(highScores); // Log the scores
+            // Any other code that relies on highScores can go here
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    
+    fetchAndHandleHighScores();
 
     boardHTML.classList.add("open");
     frogger.reset();
