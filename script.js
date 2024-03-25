@@ -489,7 +489,6 @@ function init() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            console.log(response)
             console.log(response.body)
             const res = await response.json();
             console.log(res.body)
