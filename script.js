@@ -501,12 +501,12 @@ function init() {
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
+    console.log(highScores)
 
     boardHTML.classList.add("open");
     frogger.reset();
     boardReset();
     generateBoard()
-    console.log(board);
     render();
 }
 
