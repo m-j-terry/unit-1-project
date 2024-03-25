@@ -484,7 +484,7 @@ scoreForm.addEventListener("submit", async (e) => {
 /* board functions */
 function init() {
     //set highscores
-    highScores = async () => {
+    async function setHighScores() {
         try {
             const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`);
             
@@ -501,6 +501,7 @@ function init() {
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
+    highScores = setHighScores()
     console.log(highScores)
 
     boardHTML.classList.add("open");
@@ -666,7 +667,6 @@ function generateRow() {
         // 3/7 chance of a row being a 'road'
     } else if (rowTypeNum === 5 || rowTypeNum === 6 || rowTypeNum === 7) {
         pattern = Math.floor(Math.random() * 3) + 1
-        console.log("pattern" + pattern)
         // three different road starting patterns
         if (pattern === 1) {
             row.insertFirst(1)
@@ -757,7 +757,6 @@ function renderBoard() {
             }
         }
     }
-    console.log(board)
     document.querySelector("#score").innerHTML = `SCORE: ${frogger.score}   /`
     document.querySelector("#highscore").innerHTML = `/  HIGHSCORE: ${highScore}`
 }
