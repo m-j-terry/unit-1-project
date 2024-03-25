@@ -501,7 +501,14 @@ function init() {
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
-    highScores = setHighScores()
+    const highScoresPromise = setHighScores()
+
+    highScoresPromise.then(scores => {
+        highScores = scores
+    }).catch(error => {
+        console.log(error)
+    })
+
     console.log(highScores)
 
     boardHTML.classList.add("open");
