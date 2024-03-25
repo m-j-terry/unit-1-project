@@ -493,7 +493,7 @@ function init() {
             }
             
             const res = await response.json();
-            const scores = res.body.scores;
+            const scores = res.scores;
             console.log(scores);
             return scores;
         } catch (error) {
@@ -501,7 +501,14 @@ function init() {
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
-    highScores = setHighScores()
+    const highScoresPromise = setHighScores()
+
+    highScoresPromise.then(scores => {
+        highScores = scores
+    }).catch(error => {
+        console.log(error)
+    })
+
     console.log(highScores)
 
     boardHTML.classList.add("open");
