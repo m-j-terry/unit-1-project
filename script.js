@@ -490,10 +490,10 @@ function init() {
                 throw new Error('Network response was not ok');
             }
             console.log(response)
-            // const res = await response.json();
+            const res = await response.json();
             // const scores = res;
-            // console.log(scores);
-            return response;
+            console.log(res.scores);
+            return res.scores;
         } catch (error) {
             console.error('Error:', error);
             throw error; // Re-throw the error to propagate it to the caller
