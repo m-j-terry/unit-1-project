@@ -941,8 +941,9 @@ function gameOver() {
         const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
         addScoreModal.classList.add("open")
 
+        const number = frogger.score
         document.querySelector("#date").value = formattedDate
-        document.querySelector("#scoreSubmit").value = frogger.score
+        document.querySelector("#scoreSubmit").value = number
         document.querySelector("#difficulty").value = difficulty
     } else if (frogger.score > lowestHighScore.score) {
         disableKeys = true
