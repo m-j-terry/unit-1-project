@@ -476,10 +476,10 @@ scoreForm.addEventListener("submit", async (e) => {
         const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
             method: "POST",
             body: {
-                name: formData.name,
-                score: formData.score,
-                difficulty: formData.difficulty,
-                date: formData.date
+                name: formData.get('name'),
+                score: formData.get('score'),
+                difficulty: formData.get('difficulty'),
+                date: formData.get('date')
             }
         })
         if (!response.ok) {
