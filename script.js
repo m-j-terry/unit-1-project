@@ -465,7 +465,7 @@ scoreForm.addEventListener("submit", async (e) => {
     const day = today.getDate();
     const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
     try {
-        // const formData = new FormData(scoreForm)
+        const formData = new FormData(scoreForm)
         // formData.append('score', frogger.score)
         // formData.append('difficulty', difficulty)
         // formData.append('date', formattedDate)
@@ -480,13 +480,13 @@ scoreForm.addEventListener("submit", async (e) => {
         //     date: formData.get('date')
         // }
 
-        const name = document.querySelector('#name').value;
+        // const name = document.querySelector('#name').value;
         const score = frogger.score;
         const difficulty = difficulty;
         const date = formattedDate;
         
         const data = {
-            name: name,
+            name: formData.get('name'),
             score: score,
             difficulty: difficulty,
             date: date
