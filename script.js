@@ -473,14 +473,15 @@ scoreForm.addEventListener("submit", async (e) => {
         for (const pair of formData.entries()) {
             console.log(pair[0] + ': ' + pair[1]);
         }
+        const data = {
+            name: formData.get('name'),
+            score: formData.get('score'),
+            difficulty: formData.get('difficulty'),
+            date: formData.get('date')
+        }
         const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
             method: "POST",
-            body: {
-                name: formData.get('name'),
-                score: formData.get('score'),
-                difficulty: formData.get('difficulty'),
-                date: formData.get('date')
-            }
+            body: JSON.stringify(data);
         })
         if (!response.ok) {
             throw new Error("Failed to add score");
