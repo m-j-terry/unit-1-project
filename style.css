@@ -103,6 +103,10 @@ Button:hover {
     font-family: "Press Start 2P", sans-serif;
 }
 
+#tryAgainButton{
+    font-family: "Press Start 2P", sans-serif;
+}
+
 .gameButtons {
     display: none;
 }
