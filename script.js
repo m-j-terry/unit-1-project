@@ -912,7 +912,7 @@ function gameOver() {
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
     console.log(lowestHighScore)
-    if (frogger.score > lowestHighScore.score && highScoresLength >= 10){
+    if (frogger.score > lowestHighScore.score && highScoresLength > 10){
         // Delete number 10 from highScores
         async function deleteOne() {
             try {
