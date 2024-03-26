@@ -53,15 +53,18 @@ Button:hover {
     display:inline-flex;
 }
 /* highScores displays */
-.hichScores{
+.highScores{
     display: flex; 
     flex-direction:column;
 }
 .scoreDisplay{
-    font-family: "Press Start 2P", sans-serif;
     display:flex;
     flex-direction:row;
     justify-content: space-evenly;
+}
+.scoreDisplay p{
+    font-family: "Press Start 2P", sans-serif;
+
 }
 
 .modal.close, #startGameModal.close {
