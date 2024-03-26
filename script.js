@@ -495,20 +495,8 @@ function init() {
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
-
-    async function fetchAndHandleHighScores() {
-        try {
-            const highScores = await setHighScores(); // Wait for the Promise to resolve
-            console.log(highScores); // Log the scores
-            // Any other code that relies on highScores can go here
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-    
-    fetchAndHandleHighScores();
-    function setInnerHTML(){
-        let scoreDisplays = highScores.map((score) => `
+    function setInnerHTML(arr){
+        let scoreDisplays = arr.map((score) => `
             <div class="scoreDisplay">
                 <p>${score.name}</p>
                 <p>${score.score}</p>
@@ -519,7 +507,19 @@ function init() {
         const scoresHTML = scoreDisplays.join('')
         allTimeHighScores.innerHTML = scoresHTML
     }
-    setInnerHTML()
+
+    async function fetchAndHandleHighScores() {
+        try {
+            const highScores = await setHighScores(); // Wait for the Promise to resolve
+            console.log(highScores); // Log the scores
+            setInnerHTML(highScores)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    fetchAndHandleHighScores();
+    
     boardHTML.classList.add("open");
     frogger.reset();
     boardReset();
