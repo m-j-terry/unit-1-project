@@ -482,13 +482,13 @@ scoreForm.addEventListener("submit", async (e) => {
 
         // const name = document.querySelector('#name').value;
         const score = frogger.score;
-        const difficulty = difficulty;
+        const dif = difficulty;
         const date = formattedDate;
         
         const data = {
             name: formData.get('name'),
             score: score,
-            difficulty: difficulty,
+            difficulty: dif,
             date: date
         }
         console.log(data)
