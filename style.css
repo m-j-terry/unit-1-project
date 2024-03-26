@@ -90,13 +90,17 @@ Button:hover {
     display: block;
     position: relative;
 }
-
+/* gameOverModal and addScoreModal  */
 #gameOverModal, #addScoreModal {
     display: none;
 }
 
 #gameOverModal.open, #addScoreModal.open {
     display: block;
+}
+
+#gameOverModal p{
+    font-family: "Press Start 2P", sans-serif;
 }
 
 .gameButtons {
