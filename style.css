@@ -107,7 +107,7 @@ Button:hover {
     display: none;
 }
 
-#scoreForm input {
+#scoreForm input, #scoreForm label {
     font-family: "Press Start 2P", sans-serif;
 }
 

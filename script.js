@@ -223,6 +223,7 @@ let difficulty = "easy";
 let highScores = []
 let lowestHighScore = {}
 let highScoresLength = 0
+let disableKeys = false
 let carSplatCol;
 
 // board represents the physical board that the user sees. However, there are two other linked lists that track different properties of the board: 1) type(river, road, ground), this is important because each one has different properties for handling frogger's movement. 2) direction: this is crucial for the river sections: if you have two river sections going the same direction, the game would be impossible.
@@ -382,13 +383,13 @@ const theme = document.querySelector("#theme");
 
 /*----- event listeners -----*/
 addEventListener("keydown", (event) => {
-    if (event.code == "ArrowUp" || event.code == "KeyW") {
+    if (disableKeys === false && (event.code == "ArrowUp" || event.code == "KeyW")) {
         frogger.hopForward();
-    } else if (event.code == "ArrowDown" || event.code == "KeyS") {
+    } else if (disableKeys === false && (event.code == "ArrowDown" || event.code == "KeyS")) {
         frogger.hopBackward();
-    } else if (event.code == "ArrowLeft" || event.code == "KeyA") {
+    } else if (disableKeys === false && (event.code == "ArrowLeft" || event.code == "KeyA")) {
         frogger.hopLeft();
-    } else if (event.code == "ArrowRight" || event.code == "KeyD") {
+    } else if (disableKeys === false && (event.code == "ArrowRight" || event.code == "KeyD")) {
         frogger.hopRight();
     }
 });
@@ -513,17 +514,20 @@ function init() {
 
     async function fetchAndHandleHighScores() {
         try {
-            const highScores = await setHighScores(); // Wait for the Promise to resolve
+            const highScoresLocal = await setHighScores(); // Wait for the Promise to resolve
+            highScores = highScoresLocal
             console.log(highScores); // Log the scores
-            setInnerHTML(highScores)
+            setInnerHTML(highScoresLocal)
             lowestHighScore = highScores[highScores.length - 1]
-            highScoresLength = highscores.length
+            highScoresLength = highScores.length
         } catch (error) {
             console.error('Error:', error);
         }
     }
 
     fetchAndHandleHighScores();
+
+    disableKeys = false
 
     boardHTML.classList.add("open");
     frogger.reset();
@@ -904,6 +908,8 @@ function gameOver() {
 
         deleteOne()
 
+        disableKeys = true
+
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
@@ -915,6 +921,8 @@ function gameOver() {
         document.querySelector("#scoreSubmit").value = highScore
         document.querySelector("#difficulty").value = difficulty
     } else if (highScore > lowestHighScore.score) {
+        disableKeys = true
+
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
@@ -922,9 +930,17 @@ function gameOver() {
         const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
         addScoreModal.classList.add("open")
 
-        document.querySelector("#date").value = formattedDate
-        document.querySelector("#scoreSubmit").value = highScore
-        document.querySelector("#difficulty").value = difficulty
+        const dateInput = document.querySelector("#date");
+        dateInput.value = formattedDate;
+        dateInput.disabled = true;
+        
+        const scoreSubmitInput = document.querySelector("#scoreSubmit");
+        scoreSubmitInput.value = highScore;
+        scoreSubmitInput.disabled = true;
+        
+        const difficultyInput = document.querySelector("#difficulty");
+        difficultyInput.value = difficulty;
+        difficultyInput.disabled = true;
         addScoreModal.classList.add("open")
     } else {
         gameOverModal.classList.add("open");
