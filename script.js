@@ -221,6 +221,8 @@ class ColumnLinkedList {
 let boardInterval;
 let difficulty = "easy";
 let highScores = []
+let lowestHighScore = {}
+let highScoresLength = 0
 let carSplatCol;
 
 // board represents the physical board that the user sees. However, there are two other linked lists that track different properties of the board: 1) type(river, road, ground), this is important because each one has different properties for handling frogger's movement. 2) direction: this is crucial for the river sections: if you have two river sections going the same direction, the game would be impossible.
@@ -514,6 +516,8 @@ function init() {
             const highScores = await setHighScores(); // Wait for the Promise to resolve
             console.log(highScores); // Log the scores
             setInnerHTML(highScores)
+            lowestHighScore = highScores[highScores.length - 1]
+            highScoresLength = highscores.length
         } catch (error) {
             console.error('Error:', error);
         }
@@ -879,9 +883,8 @@ function gameOver() {
     plunk.play();
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
-    const lowestHighScore = highScores[highScores.length - 1]
     console.log(lowestHighScore)
-    if (highScore > lowestHighScore.score && highScores.length >= 10){
+    if (highScore > lowestHighScore.score && highScoresLength >= 10){
         // Delete number 10 from highScores
         async function deleteOne() {
             try {
