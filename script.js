@@ -341,6 +341,7 @@ let frogger = {
         this.life = -1
         this.hopBack = 0
         this.rows = 0
+        this.previousColor = 3
     }
 }
 
