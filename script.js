@@ -505,6 +505,7 @@ function init() {
             </div>
         `)
         const scoresHTML = scoreDisplays.join('')
+        console.log(scoresHTML)
         allTimeHighScores.innerHTML = scoresHTML
     }
 
@@ -519,7 +520,7 @@ function init() {
     }
 
     fetchAndHandleHighScores();
-    
+
     boardHTML.classList.add("open");
     frogger.reset();
     boardReset();
