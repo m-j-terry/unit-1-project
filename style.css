@@ -105,6 +105,7 @@ Button:hover {
 
 #gameOverModal #tryAgainButton{
     font-family: "Press Start 2P", sans-serif;
+    width: 5rem;
 }
 
 .gameButtons {
