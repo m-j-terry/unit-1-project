@@ -469,8 +469,10 @@ scoreForm.addEventListener("submit", async (e) => {
         formData.append('score', frogger.score)
         formData.append('difficulty', difficulty)
         formData.append('date', formattedDate)
-        console.log('formData = ' + formData)
-
+        console.log('formData:');
+        for (const pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
         const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
             method: "POST",
             body: formData
