@@ -507,7 +507,19 @@ function init() {
     }
     
     fetchAndHandleHighScores();
-
+    function setInnerHTML(){
+        let scoreDisplays = highScores.map((score) => `
+            <div class="scoreDisplay">
+                <p>${score.name}</p>
+                <p>${score.score}</p>
+                <p>${score.difficulty}</p>
+                <p>${score.date}</p>
+            </div>
+        `)
+        const scoresHTML = scoreDisplays.join('')
+        allTimeHighScores.innerHTML = scoresHTML
+    }
+    setInnerHTML()
     boardHTML.classList.add("open");
     frogger.reset();
     boardReset();
@@ -866,16 +878,6 @@ function gameOver() {
     plunk.play();
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
-    let scoreDisplays = highScores.map((score) => `
-        <div class="scoreDisplay">
-            <p>${score.name}</p>
-            <p>${score.score}</p>
-            <p>${score.difficulty}</p>
-            <p>${score.date}</p>
-        </div>
-    `)
-    const scoresHTML = scoreDisplays.join('')
-    allTimeHighScores.innerHTML = scoresHTML
     if (highScore > highScores[highScores.length - 1]){
         const today = new Date();
         const year = today.getFullYear();
