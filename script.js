@@ -912,7 +912,7 @@ function gameOver() {
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
     console.log(lowestHighScore)
-    if (highScore > lowestHighScore.score && highScoresLength >= 10){
+    if (frogger.score > lowestHighScore.score && highScoresLength >= 10){
         // Delete number 10 from highScores
         async function deleteOne() {
             try {
@@ -942,9 +942,9 @@ function gameOver() {
         addScoreModal.classList.add("open")
 
         document.querySelector("#date").value = formattedDate
-        document.querySelector("#scoreSubmit").value = highScore
+        document.querySelector("#scoreSubmit").value = frogger.score
         document.querySelector("#difficulty").value = difficulty
-    } else if (highScore > lowestHighScore.score) {
+    } else if (frogger.score > lowestHighScore.score) {
         disableKeys = true
 
         const today = new Date();
