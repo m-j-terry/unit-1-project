@@ -501,7 +501,7 @@ function init() {
                 <p>${score.name}</p>
                 <p>${score.score}</p>
                 <p>${score.difficulty}</p>
-                <p>${score.date}</p>
+                <p>${new Date(score.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
             </div>
         `)
         const scoresHTML = scoreDisplays.join('')
@@ -879,17 +879,8 @@ function gameOver() {
     plunk.play();
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
-    if (highScore > highScores[highScores.length - 1]){
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
-        const day = today.getDate();
-        const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
-        addScoreModal.classList.add("open")
-
-        document.querySelector("#date").value = formattedDate
-        document.querySelector("#scoreSubmit").value = highScore
-        document.querySelector("#difficulty").value = difficulty
+    const lowestHighScore = highScores[highScores.length - 1]
+    if (highScore > lowestHighScore.score && highScores.length >= 10){
         // Delete number 10 from highScores
         async function deleteOne() {
             try {
@@ -908,7 +899,28 @@ function gameOver() {
         }
 
         deleteOne()
-    } else if (highScore > highScores[highScores.length-1]) {
+
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
+        const day = today.getDate();
+        const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+        addScoreModal.classList.add("open")
+
+        document.querySelector("#date").value = formattedDate
+        document.querySelector("#scoreSubmit").value = highScore
+        document.querySelector("#difficulty").value = difficulty
+    } else if (highScore > lowestHighScore.score) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
+        const day = today.getDate();
+        const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+        addScoreModal.classList.add("open")
+
+        document.querySelector("#date").value = formattedDate
+        document.querySelector("#scoreSubmit").value = highScore
+        document.querySelector("#difficulty").value = difficulty
         addScoreModal.classList.add("open")
     } else {
         gameOverModal.classList.add("open");
