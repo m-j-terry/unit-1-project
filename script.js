@@ -339,7 +339,6 @@ let frogger = {
     reset() {
         this.column = 6
         this.life = -1
-        this.score = 0
         this.hopBack = 0
         this.rows = 0
     }
@@ -460,9 +459,17 @@ tryAgainBtn.addEventListener("click", (e) => {
 
 scoreForm.addEventListener("submit", async (e) => {
     e.preventDefault()
-
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1; // Months are zero-based (0-11), so add 1
+    const day = today.getDate();
+    const formattedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
     try {
         const formData = new FormData(scoreForm)
+        console.log(formData)
+        formData.append('score', frogger.score)
+        formData.append('difficulty', difficulty)
+        formData.append('date', formattedDate)
         const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`, {
             method: "POST",
             body: formData
@@ -472,8 +479,10 @@ scoreForm.addEventListener("submit", async (e) => {
         }
         console.log("Score added successfully");
         scoreForm.reset(); // Reset the form
+        // reset the highScores
+        fetchAndHandleHighScores();
         // set the gameOverModal
-        addScoreModal.classList.remove("open")
+        addScoreModal.classList.remove("open");
         gameOverModal.classList.add("open");
     } catch (error) {
         console.error("Error:", error);
@@ -482,51 +491,52 @@ scoreForm.addEventListener("submit", async (e) => {
 
 /*----- functions -----*/
 
+/* highScore Functions */
+//set highscores
+async function setHighScores() {
+    try {
+        const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`);
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error; // Re-throw the error to propagate it to the caller
+    }
+}
+function setInnerHTML(arr){
+    let scoreDisplays = arr.map((score) => `
+        <div class="scoreDisplay">
+            <p>${score.name}</p>
+            <p>${score.score}</p>
+            <p>${score.difficulty}</p>
+            <p>${new Date(score.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
+        </div>
+    `)
+    const scoresHTML = scoreDisplays.join('')
+    console.log(scoresHTML)
+    allTimeHighScores.innerHTML = scoresHTML
+}
+
+async function fetchAndHandleHighScores() {
+    try {
+        const highScoresLocal = await setHighScores(); // Wait for the Promise to resolve
+        highScores = highScoresLocal
+        console.log(highScores); // Log the scores
+        setInnerHTML(highScoresLocal)
+        lowestHighScore = highScores[highScores.length - 1]
+        highScoresLength = highScores.length
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 /* board functions */
 function init() {
-    //set highscores
-    async function setHighScores() {
-        try {
-            const response = await fetch(`https://nodejs-serverless-function-express-frogger.vercel.app/api/score/${difficulty}`);
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error:', error);
-            throw error; // Re-throw the error to propagate it to the caller
-        }
-    }
-    function setInnerHTML(arr){
-        let scoreDisplays = arr.map((score) => `
-            <div class="scoreDisplay">
-                <p>${score.name}</p>
-                <p>${score.score}</p>
-                <p>${score.difficulty}</p>
-                <p>${new Date(score.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
-            </div>
-        `)
-        const scoresHTML = scoreDisplays.join('')
-        console.log(scoresHTML)
-        allTimeHighScores.innerHTML = scoresHTML
-    }
-
-    async function fetchAndHandleHighScores() {
-        try {
-            const highScoresLocal = await setHighScores(); // Wait for the Promise to resolve
-            highScores = highScoresLocal
-            console.log(highScores); // Log the scores
-            setInnerHTML(highScoresLocal)
-            lowestHighScore = highScores[highScores.length - 1]
-            highScoresLength = highScores.length
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
     fetchAndHandleHighScores();
-
+    frogger.score = 0
     disableKeys = false
 
     boardHTML.classList.add("open");
@@ -935,7 +945,7 @@ function gameOver() {
         dateInput.disabled = true;
         
         const scoreSubmitInput = document.querySelector("#scoreSubmit");
-        scoreSubmitInput.value = highScore;
+        scoreSubmitInput.value = score;
         scoreSubmitInput.disabled = true;
         
         const difficultyInput = document.querySelector("#difficulty");
