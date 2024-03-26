@@ -880,6 +880,7 @@ function gameOver() {
     boardHTML.classList.remove("open");
     modal.classList.remove("close");
     const lowestHighScore = highScores[highScores.length - 1]
+    console.log(lowestHighScore)
     if (highScore > lowestHighScore.score && highScores.length >= 10){
         // Delete number 10 from highScores
         async function deleteOne() {
